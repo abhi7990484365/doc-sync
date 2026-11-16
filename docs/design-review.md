@@ -1,35 +1,38 @@
 # Design Review
 
 ## Summary
-The architecture is minimal, appropriate for the story scope, and generally aligns with the requirements. The design covers the core /version contract well, but there are a few medium-risk gaps around environment isolation during tests and the strictness of response validation. These can be resolved with targeted clarifications rather than architectural expansion.
 
-## Findings table
+The proposed separation between CLI validation, local/GitHub scanners,
+deterministic rendering, and writing fits the approved requirements while
+keeping the implementation small. The current repository already has a
+local scanner and renderer, but it does not yet support `owner/name` input or
+the requested push-to-main documentation workflow.
 
-| ID | Severity | Area | Problem | Suggested fix |
+## Findings
+
+| ID | Severity | Area | Finding | Recommendation |
 | --- | --- | --- | --- | --- |
-| ARCH-01 | Medium | FR-2, FR-5 | The design states the test runs with APP_ENV and APP_REGION unset, but it does not specify when those variables are cleared relative to app startup. If the app reads configuration at import time, the default path may not actually be exercised. | Define the test fixture explicitly: clear APP_ENV and APP_REGION before creating or importing the FastAPI app, then restore them after the test. |
-| ARCH-02 | Medium | FR-4, FR-5, NFR-2 | The design validates the presence of keys and expected defaults, but it does not specify strict payload assertions such as required key presence, value types, or rejection of malformed response shapes. | Add explicit contract assertions for required keys and expected string types, and ensure the test fails if the payload is malformed or incomplete. |
-| ARCH-03 | Low | NFR-1 | The design notes no secrets are required, but it does not explicitly say that logs and test failure output must not expose environment values or config data. | State explicitly that tests must not print secrets or environment values, and that failure output should show only relevant response details. |
+| DR-01 | High | GitHub CLI output | A remote `owner/name` source has no local repository directory, so the default destination for `docs/PROJECT_DOC.md` was undefined. | Resolved: GitHub mode writes to `docs/PROJECT_DOC.md` under the current working directory unless an output path is supplied. |
+| DR-02 | Medium | GitHub API | Repository contents, metadata, and commit information may require multiple API requests and encounter rate limits or partial failures. | Apply request timeouts, validate API responses, handle rate-limit and HTTP errors explicitly, and avoid returning partially fabricated documents on API failure. |
+| DR-03 | Medium | Secret handling | README text and dependency values are user-controlled and could contain credential-like strings. | Sanitize recognized secrets before rendering and never include raw API response bodies, headers, or exception text in logs/errors. Add regression tests using representative secret patterns. |
+| DR-04 | Medium | Local scanning | Recursive scans can include generated directories such as `.git`, virtual environments, and caches, affecting speed and language detection. | Skip common generated/dependency directories while continuing to scan normal project source. |
+| DR-05 | Low | GitHub Action | A workflow-generated commit may trigger the push workflow again. | Use a skip marker or verify the second run is a no-op; commit only when the generated file changes. |
 
-## Requirements coverage
+## Requirement Coverage
 
-| Requirement | Covered by component | Status |
+| Requirement | Design area | Status |
 | --- | --- | --- |
-| FR-1: The test suite shall exercise the GET /version endpoint. | FastAPI Application; Test Layer | Covered |
-| FR-2: The test shall run with APP_ENV and APP_REGION unset to validate default behavior. | Test Layer | Covered in principle; needs explicit env-clear sequencing |
-| FR-3: The endpoint shall return HTTP 200 when requested in the test environment. | FastAPI Application; Test Layer | Covered |
-| FR-4: The response JSON shall include the keys "version", "environment", and "region". | FastAPI Application; Test Layer | Covered |
-| FR-5: When no environment variables are set, the response shall contain "environment" = "development" and "region" = "local". | FastAPI Application; Test Layer | Covered in principle; needs strict assertion of exact defaults |
-| FR-6: The test shall be focused on the /version contract and suitable for CI validation. | Test Layer; CI Execution | Covered |
-| NFR-1: Security - The test must not expose or require secrets to validate the endpoint contract. | CI Execution; Security section | Mostly covered; should be explicit about log hygiene |
-| NFR-2: Reliability - The test must consistently detect regressions in the /version response fields. | Test Layer | Covered with a caveat on strict payload validation |
-| NFR-3: Performance - The test must be lightweight and not add significant runtime overhead to the suite. | Test Layer | Covered |
-| NFR-4: Maintainability - The test should remain single-purpose, readable, and easy to extend for future response changes. | Test Layer | Covered |
+| FR-1 to FR-3 | CLI, scanners, renderer | Covered |
+| FR-4 to FR-8 | README/dependency/entry-point detection and missing-data rules | Covered; secret filtering needs tests |
+| FR-9 to FR-10 | Input validation and GitHub API handling | Covered in principle; DR-02 |
+| FR-11 to FR-12 | Environment-only token and sanitized output | Covered in principle; DR-03 |
+| FR-13 | Deterministic output | Covered |
+| FR-14 | Push workflow | Covered in principle; DR-05 |
+| NFR-1 to NFR-4 | Python 3.11, scan efficiency, automated testing | Covered in principle; DR-04 |
 
-## Questions for me
+## Decision
 
-1. For ARCH-01, should the environment be cleared before app construction/import (Accept/Reject/Defer)?
-2. For ARCH-02, should the test include stricter schema/type validation beyond the basic key/value assertions (Accept/Reject/Defer)?
-3. For ARCH-03, should log hygiene and no-environment-printing be treated as an explicit requirement (Accept/Reject/Defer)?
-
-Please decide for each finding whether you Accept, Reject, or Defer it.
+For GitHub `owner/name` input, write the generated document to
+`docs/PROJECT_DOC.md` under the current working directory unless an explicit
+output path is supplied. This decision is recorded in the requirements and
+architecture.
