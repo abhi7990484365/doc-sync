@@ -1,7 +1,7 @@
-﻿.................                                                        [100%]
+....................................                                     [100%]
 ============================== warnings summary ===============================
-..\AppData\Roaming\Python\Python313\site-packages\starlette\testclient.py:40
-  <USER_HOME>\AppData\Roaming\Python\Python313\site-packages\starlette\testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+.venv\Lib\site-packages\starlette\testclient.py:40
+  <WORKSPACE>\.venv\Lib\site-packages\starlette\testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
     _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
@@ -13,8 +13,8 @@ src\__init__.py                 0      0   100%
 src\app.py                     12      0   100%
 src\doc_sync\__init__.py        2      0   100%
 src\doc_sync\__main__.py        3      0   100%
-src\doc_sync\generator.py     176     61    65%   22-23, 40-42, 45-55, 83, 91, 97, 101-117, 125, 135-138, 142-151, 160, 162, 164, 166, 176, 196, 201, 205-210, 263
+src\doc_sync\generator.py     345     43    88%   83-84, 147, 173, 193-194, 224-225, 254, 256, 258, 269, 284, 295, 321, 323, 357-358, 367, 371-372, 380, 384-386, 429, 435, 439, 444-445, 470, 477, 479, 484, 488, 493, 535, 562, 564, 621-626, 633
 ---------------------------------------------------------
-TOTAL                         193     61    68%
+TOTAL                         362     43    88%
 
-17 passed, 1 warning in 3.70s
+36 passed, 1 warning in 10.04s

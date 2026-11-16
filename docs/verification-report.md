@@ -31,3 +31,6 @@
 - Secret filtering recognizes credential assignments, common token forms,
   URL credentials, and absolute paths. Arbitrary unlabelled secret-like text
   cannot always be distinguished from legitimate README or dependency data.
+- `pip-audit -r requirements.txt` reported 20 known advisories across
+  `pytest`, `requests`, and transitive `starlette`; no dependency upgrades
+  were made in this feature branch.

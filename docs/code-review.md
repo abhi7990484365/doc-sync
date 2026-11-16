@@ -8,7 +8,10 @@ against the approved requirements and design.
 
 ## Findings
 
-No unresolved correctness or security findings.
+- DEP-01 — Medium: `pip-audit -r requirements.txt` reported 20 known
+  advisories across the pre-existing pinned `pytest`, `requests`, and
+  transitive `starlette` versions. Dependency upgrades were not included in
+  this documentation-sync change; track them separately.
 
 The review caught and resolved these issues before acceptance:
 
@@ -27,8 +30,9 @@ The review caught and resolved these issues before acceptance:
 - Correctness: Pass
 - Error handling: Pass; invalid inputs and GitHub failures return sanitized
   non-zero errors.
-- Security: Pass for recognized credentials and paths; the API token is read
-  only from `GITHUB_TOKEN` and is not included in output or error text.
+- Security: Credential and path filtering is covered for recognized
+  patterns, and the API token is read only from `GITHUB_TOKEN`; dependency
+  advisories remain as noted in DEP-01.
 - Determinism: Pass; section and detected-value ordering are stable.
 - Tests: Focused local and mocked GitHub cases cover success, missing data,
   empty repositories, API failures, timeouts, rate limits, and sanitization.
@@ -37,4 +41,5 @@ The review caught and resolved these issues before acceptance:
 
 ## Decision
 
-Accept.
+Accept the implementation with DEP-01 recorded as a follow-up dependency
+security issue.
