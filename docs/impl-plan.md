@@ -9,11 +9,11 @@ Build order: start with project setup, then the core FastAPI test contract work,
 
 | ID | Title | Priority | Requirements | Blocked by | Status |
 | --- | --- | --- | --- | --- | --- |
-| T1 | Project setup and test baseline | High | FR-1, FR-6, NFR-3, NFR-4 | None | To Do |
-| T2 | Confirm /version default configuration behavior | High | FR-2, FR-5 | T1 | To Do |
-| T3 | Implement focused /version endpoint test | High | FR-1, FR-3, FR-4, FR-5, NFR-2 | T2 | To Do |
-| T4 | Add CI execution for the new test | Medium | FR-6, NFR-2 | T3 | To Do |
-| T5 | Final verification and review | Medium | NFR-1, NFR-4, Definition of Done | T4 | To Do |
+| T1 | Project setup and test baseline | High | FR-1, FR-6, NFR-3, NFR-4 | None | Done |
+| T2 | Confirm /version default configuration behavior | High | FR-2, FR-5 | T1 | Done |
+| T3 | Implement focused /version endpoint test | High | FR-1, FR-3, FR-4, FR-5, NFR-2 | T2 | Done |
+| T4 | Add CI execution for the new test | Medium | FR-6, NFR-2 | T3 | Done |
+| T5 | Final verification and review | Medium | NFR-1, NFR-4, Definition of Done | T4 | Done |
 
 ## 3. Task Details
 
