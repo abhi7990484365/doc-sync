@@ -1,24 +1,45 @@
 # Code Review
 
-## Findings table
+## Scope
 
-| ID | Severity | File | Problem | Suggested fix | Decision |
-| --- | --- | --- | --- | --- | --- |
-| None | - | - | No issues found during review of `src/` and `tests/` against `docs/requirements.md`. | None required. | Accept |
+Reviewed the local and GitHub repository scanners, renderer, CLI error paths,
+secret/path sanitization, tests, and the push-to-main documentation workflow
+against the approved requirements and design.
 
-## Review summary
+## Findings
 
-The implementation was reviewed against the 7-point checklist in the code review prompt:
+- DEP-01 — Medium: `pip-audit -r requirements.txt` reported 20 known
+  advisories across the pre-existing pinned `pytest`, `requests`, and
+  transitive `starlette` versions. Dependency upgrades were not included in
+  this documentation-sync change; track them separately.
+
+The review caught and resolved these issues before acceptance:
+
+- The workflow initially created a commit without pushing it. It now pushes
+  the generated-doc commit to `main`.
+- Secret filtering now covers credential assignments, common token forms,
+  URL user information, and absolute local paths.
+- Generated/dependency directories and the generated document itself are
+  excluded from local scanning to prevent noise and unstable empty-repo
+  results.
+- Packaging entry points are read from `pyproject.toml` and `setup.cfg`
+  without executing setup scripts.
+
+## Checklist
 
 - Correctness: Pass
-- Security: Pass
-- Error Handling: Pass for this scope
-- Test Coverage: Pass
-- Code Clarity: Pass
-- DRY Principle: Pass
-- Dependency Safety: Pass
+- Error handling: Pass; invalid inputs and GitHub failures return sanitized
+  non-zero errors.
+- Security: Credential and path filtering is covered for recognized
+  patterns, and the API token is read only from `GITHUB_TOKEN`; dependency
+  advisories remain as noted in DEP-01.
+- Determinism: Pass; section and detected-value ordering are stable.
+- Tests: Focused local and mocked GitHub cases cover success, missing data,
+  empty repositories, API failures, timeouts, rate limits, and sanitization.
+- Scope and maintainability: Pass; local and GitHub inputs share rendering
+  helpers. `httpx` is declared for the existing FastAPI TestClient suite.
 
-## Decision log
+## Decision
 
-- Review outcome: Accept
-- Reason: The implementation satisfies the stated requirements, includes the required /version contract test, and does not introduce security, scope, or reliability issues within the story boundaries.
+Accept the implementation with DEP-01 recorded as a follow-up dependency
+security issue.

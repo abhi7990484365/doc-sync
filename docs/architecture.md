@@ -1,123 +1,109 @@
 # Architecture
 
 ## 1. Overview
-This architecture is intentionally minimal and aligned to the documented requirement set. The solution consists of a single FastAPI application and a focused automated test layer that validates the contract of the GET /version endpoint without setting APP_ENV or APP_REGION.
 
-This is sufficient for FR-1 through FR-6 and supports NFR-2 (reliability), NFR-3 (performance), and NFR-4 (maintainability). No additional services or infrastructure are introduced because the requirement does not call for them.
+`doc-sync` is a Python command-line application that gathers repository facts,
+renders a stable Markdown document, and writes `docs/PROJECT_DOC.md`. A local
+repository is read from disk; a GitHub repository is read through the GitHub
+REST API. A GitHub Actions workflow runs the local-repository mode on pushes
+to `main` and commits the output only when it differs from the checked-in
+document.
 
-## 2. Architectural Principles
-- Keep the application small and standard: a single FastAPI service with a small, explicit response contract.
-- Validate environment-default behavior explicitly in tests, instead of depending on deployment-time assumptions.
-- Favor direct endpoint testing over broader integration or orchestration layers where the requirement is scoped to one endpoint.
+## 2. Components
 
-## 3. Components
+### 2.1 CLI and Input Validation
 
-### 3.1 FastAPI Application
-The FastAPI application exposes the GET /version endpoint and returns a JSON payload with the keys version, environment, and region.
+The CLI accepts a local directory or a GitHub repository in `owner/name`
+form. It validates the input before scanning. Invalid or missing local paths
+and invalid repository identifiers produce a concise error and non-zero exit
+status.
 
-Design decision:
-- Use the existing FastAPI service as the runtime boundary for /version.
-- Keep configuration reading in the application layer so the default environment values are sourced from the app’s standard config/default behavior.
+### 2.2 Repository Scanners
 
-Why this fits the requirements:
-- FR-1 requires the test suite to exercise the GET /version endpoint.
-- FR-3 requires the endpoint to return HTTP 200 in the test environment.
-- FR-4 requires the JSON payload to include version, environment, and region.
-- FR-5 requires default values to be environment = "development" and region = "local" when APP_ENV and APP_REGION are unset.
+- The local scanner reads repository files and Git metadata without including
+  absolute local paths in output.
+- The GitHub scanner uses the GitHub API to obtain repository metadata,
+  relevant file contents, a file inventory, and the latest commit. It reads a
+  token only from the configured environment variable when present.
+- Both scanners provide the renderer with the same normalized repository
+  facts so document formatting is independent of the source.
 
-One-line reason: The requirement is explicitly about the endpoint contract of a FastAPI app, so a single application component is the simplest design that satisfies it.
+### 2.3 Documentation Renderer and Writer
 
-Alternative considered: A separate config microservice or wrapper layer. Rejected because the requirement is endpoint-scoped and does not justify additional components or coordination.
+The renderer maps normalized facts to the seven required sections, in order:
+Name, Description, Languages, Dependencies, Entry Points, How to Run, and
+Last Commit. It uses `Not Found` for missing values and emits no guessed
+metadata, secrets, or absolute local paths. Stable ordering and formatting
+make unchanged inputs produce identical output.
 
-### 3.2 Test Layer (pytest + TestClient)
-The automated test layer runs the FastAPI app in-process using the test client with APP_ENV and APP_REGION deliberately unset before the application is created or imported.
+The writer creates the `docs` directory when needed and updates
+`docs/PROJECT_DOC.md` under the current working directory by default. An
+explicit output path can override the default. Writing the same rendered
+content twice has no observable content difference.
 
-Design decision:
-- Use a single, focused endpoint test that issues a GET /version request and asserts both the HTTP status and the JSON payload.
-- Clear APP_ENV and APP_REGION before app creation/import so the default configuration path is exercised consistently.
-- Restore the environment after the test to avoid cross-test leakage.
-- Validate the payload contract strictly: required keys must be present, expected values must match the default contract, and the JSON structure must be correct.
-- Keep the test isolated to the default-config scenario.
+### 2.4 GitHub Actions
 
-Why this fits the requirements:
-- FR-1 and FR-6 require the test to be focused on the /version contract and suitable for CI.
-- FR-2 requires the test to run with APP_ENV and APP_REGION unset.
-- FR-3 requires the status code to be 200.
-- FR-4 and FR-5 require the exact keys and expected default values.
-- NFR-2 requires the test to consistently catch regressions.
-- NFR-4 requires the test to remain readable and maintainable.
+The workflow triggers on pushes to `main`, checks out the repository, sets up
+Python 3.11, installs project dependencies, and runs `doc-sync` against the
+checked-out repository. It stages and commits `docs/PROJECT_DOC.md` only when
+that file has changed. The workflow token is provided through the Actions
+environment rather than embedded in source or generated documentation.
 
-One-line reason: A direct contract test is the simplest way to validate the endpoint behavior without adding unnecessary test infrastructure.
+## 3. Data Flow
 
-Alternative considered: A bash script or manual validation only. Rejected because the requirement requires automated regression coverage in CI, and a structured test framework is easier to maintain and run consistently.
+1. The CLI parses and validates the input.
+2. The matching scanner gathers source-independent repository facts.
+3. The renderer produces the required deterministic Markdown.
+4. The writer stores the document under the current working directory by
+   default for either input source; an explicit output path can override it.
+   The GitHub Action uses local mode on the checked-out repository so the
+   result can be committed.
+5. On GitHub API failures, the CLI reports a sanitized error and exits
+   non-zero rather than writing a success-shaped document.
 
-### 3.3 CI Execution
-The test is executed in the standard CI pipeline for the project.
+## 4. Data and Detection Rules
 
-Design decision:
-- Ensure the /version test is part of the normal automated test run for every change.
+- Description: first non-empty paragraph from a supported README.
+- Dependencies: `requirements.txt` only.
+- Entry points: recognized common scripts and declared packaging entry points
+  from `pyproject.toml` and `setup.cfg`.
+- Languages: determined from recognized source-file extensions, with stable
+  ordering.
+- Last Commit: the latest commit identifier available for the source.
+- Missing section values: exactly `Not Found`.
+- GitHub input: `owner/name`; credentials are sourced only from an
+  environment variable and never included in output or error text.
 
-Why this fits the requirements:
-- FR-6 requires the test to be suitable for CI validation.
-- NFR-2 requires consistent detection of regressions.
+## 5. Error Handling and Security
 
-One-line reason: This keeps the contract validation automatic and reduces the chance of regressions being missed.
-
-Alternative considered: Manual verification before release only. Rejected because the requirement explicitly states that the endpoint contract should be detected early in CI.
-
-## 4. Interaction Flow
-1. CI starts the test suite.
-2. The test process launches the FastAPI app in test mode with APP_ENV and APP_REGION unset.
-3. The test sends a GET request to /version.
-4. The FastAPI app returns a JSON payload with version, environment, and region.
-5. The test asserts HTTP 200 and validates the defaults: environment = "development" and region = "local".
-
-This flow satisfies FR-1 through FR-6 and supports NFR-2 and NFR-4.
-
-## 5. Data and Configuration
-- Configuration source: environment variables, with default values applied when APP_ENV and APP_REGION are unset.
-- Expected defaults: environment = "development"; region = "local".
-- Response contract: JSON object containing version, environment, and region.
-- Test execution pattern: APP_ENV and APP_REGION are cleared before app creation/import and restored after execution to avoid cross-test contamination.
-- Validation pattern: Assert exact keys, expected values, and proper JSON structure rather than only a loose success check.
-
-This matches FR-2, FR-4, and FR-5 exactly. No additional persistence or configuration service is required because the requirement does not call for one.
+- Validate local paths and GitHub repository identifiers before scanning.
+- Bound GitHub network requests with timeouts and report HTTP, rate-limit,
+  timeout, and response-format failures clearly.
+- Do not print request headers, tokens, passwords, or raw response data in
+  logs or user-facing errors.
+- Do not put absolute local paths in the generated document.
+- For a valid but empty local repository, generate all seven sections with
+  `Not Found`; distinguish this from an invalid path.
 
 ## 6. Quality Attributes
 
-### Security
-- No secrets or credentials are required for the endpoint contract test.
-- This directly supports NFR-1.
+- Determinism: stable section order, sorted detected values, and no
+  timestamps or machine-specific paths in output.
+- Performance: local scanning should complete in under 10 seconds for a
+  repository with fewer than 1,000 files.
+- Maintainability: scanners, rendering, writing, and CLI error handling have
+  separate responsibilities.
+- Testability: scanners and renderer can be tested using temporary
+  repositories and mocked GitHub responses without real credentials.
 
-### Reliability
-- The test checks the exact response contract that is expected to remain stable.
-- This directly supports NFR-2.
+## 7. Requirement Traceability
 
-### Performance
-- The test is a single, lightweight endpoint call and does not introduce meaningful runtime overhead.
-- This directly supports NFR-3.
-
-### Maintainability
-- The architecture keeps the scope narrow: one app and one focused test.
-- This directly supports NFR-4.
-
-## 7. Out of Scope / Explicitly Not Included
-- No database or queue infrastructure.
-- No additional microservices.
-- No broad endpoint test expansion beyond the /version contract.
-- No production logic changes outside the existing app behavior for /version.
-
-These exclusions are consistent with the original requirement and the scope defined in the requirements document.
-
-## 8. Gaps / Not Found
-- Specific deployment environment details: Not Found.
-- CI system type: Not Found.
-- Exact app module structure: Not Found.
-- Additional endpoint contracts beyond /version: Not Found.
-
-The architecture intentionally avoids guessing where the requirement does not provide sufficient information.
-
-## 9. Change Log
-- 2026-11-16: Updated the test-layer design to explicitly clear APP_ENV and APP_REGION before app creation/import and restore them afterwards. Reason: accepted finding ARCH-01; this ensures the default-config path is actually being validated.
-- 2026-11-16: Added a stricter payload validation requirement to the test design: required keys, expected types, and structure checks. Reason: accepted finding ARCH-02; this protects against false positives from malformed or incomplete JSON responses.
-- 2026-11-16: Declined to add log-hygiene requirements in this architecture. Reason: rejected finding ARCH-03; the requirement is not necessary for this small, focused endpoint test and would broaden scope without a corresponding requirement.
+| Requirement | Architectural support |
+| --- | --- |
+| FR-1 to FR-2 | CLI validation and local/GitHub scanners |
+| FR-3 to FR-8 | Renderer and local scanner |
+| FR-9 to FR-10 | CLI validation and bounded GitHub API handling |
+| FR-11 to FR-12 | Environment-only credentials and sanitized output |
+| FR-13 | Stable scanner facts and deterministic renderer |
+| FR-14 | Push workflow with change-conditional commit |
+| NFR-1 to NFR-4 | Python 3.11 workflow, efficient scanning, focused tests |

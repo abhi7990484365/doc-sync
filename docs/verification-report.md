@@ -1,23 +1,36 @@
 # Verification Report
 
-## Test counts
-- Total tests: 17
-- Passed: 17
-- Failed: 0
-- Warnings: 1
+## Test Results
 
-## Pass/fail summary
-- Result: Pass
-- Command run: `py -3 -m pytest --cov=src --cov-report=term-missing -q`
+- Command: `python -m pytest -q`
+- Result: 36 passed, 0 failed.
+- Warning: one third-party Starlette/AnyIO deprecation warning.
+- Dependency installation: `python -m pip install -r requirements.txt`
+  completed successfully.
 
-## Coverage
-- Coverage: 68%
+## Acceptance Checks
 
-## Failures and cause
-- No test failures were observed during this verification run.
-- The lone warning is a third-party Starlette deprecation notice from `fastapi.testclient` and does not affect test results.
+- Local fixture with README, `requirements.txt`, `main.py`, and Git metadata
+  populated all seven sections.
+- Empty local and mocked empty GitHub repositories returned `Not Found` for
+  every section without crashing.
+- Invalid local paths, missing GitHub repositories, API failures, timeouts,
+  rate limits, and malformed responses are covered by tests.
+- Generated output contains sections in the required order, has no absolute
+  workspace path or tested credential patterns, and was identical across two
+  runs.
+- Two local generation runs completed in 1.92 seconds total.
+- Workflow checks confirmed the push-to-main trigger, change-conditional
+  commit, and push command.
+- `git -c core.whitespace=cr-at-eol --no-pager diff --check` passed.
 
-## Known gaps
-- The project document generation falls back to `Not Found` when a repo has no README, package manifest, or git metadata.
-- GitHub API retrieval is intentionally guarded and returns `Not Found` on any request failure or invalid repository URL.
-- The current implementation is intentionally minimal and does not attempt deeper repository analysis beyond the required metadata and deterministic project-doc rendering.
+## Known Limitations
+
+- GitHub API behavior is tested with mocked responses; no live API call or
+  GitHub Actions push was performed.
+- Secret filtering recognizes credential assignments, common token forms,
+  URL credentials, and absolute paths. Arbitrary unlabelled secret-like text
+  cannot always be distinguished from legitimate README or dependency data.
+- `pip-audit -r requirements.txt` reported 20 known advisories across
+  `pytest`, `requests`, and transitive `starlette`; no dependency upgrades
+  were made in this feature branch.

@@ -1,107 +1,85 @@
 # Implementation Plan
 
-## 1. Task Summary
-Total tasks: 5
+## 1. Summary
 
-Build order: start with project setup, then the core FastAPI test contract work, then CI validation, and finally final review and completion checks.
+Implement the approved repository documentation generator in dependency
+order. Each task includes focused tests for the behavior it introduces.
 
-## 2. Task List
+## 2. Tasks
 
-| ID | Title | Priority | Requirements | Blocked by | Status |
-| --- | --- | --- | --- | --- | --- |
-| T1 | Project setup and test baseline | High | FR-1, FR-6, NFR-3, NFR-4 | None | Done |
-| T2 | Confirm /version default configuration behavior | High | FR-2, FR-5 | T1 | Done |
-| T3 | Implement focused /version endpoint test | High | FR-1, FR-3, FR-4, FR-5, NFR-2 | T2 | Done |
-| T4 | Add CI execution for the new test | Medium | FR-6, NFR-2 | T3 | Done |
-| T5 | Final verification and review | Medium | NFR-1, NFR-4, Definition of Done | T4 | Done |
+| ID | Task | Requirements | Depends on |
+| --- | --- | --- | --- |
+| T1 | Complete deterministic local scanning and CLI validation | FR-1, FR-3 to FR-8, FR-9, FR-12 to FR-13, NFR-1 to NFR-4 | None |
+| T2 | Add GitHub repository scanning and API error handling | FR-2, FR-3 to FR-7, FR-9 to FR-13, NFR-1, NFR-3 | T1 |
+| T3 | Add the push-to-main documentation workflow | FR-14 | T1 |
+| T4 | Verify end-to-end acceptance and update generated documentation | AC1 to AC8 | T2, T3 |
 
 ## 3. Task Details
 
-### T1: Project setup and test baseline
-Description: Confirm the existing FastAPI project and test infrastructure are ready for a focused endpoint test. Ensure the test environment can run the app in-process without additional services or secrets.
+### T1: Complete deterministic local scanning and CLI validation
 
-Acceptance criteria:
-- The project has a working test runner for the FastAPI app.
-- The environment is ready for a targeted endpoint test.
-- No secrets are required for the test flow.
+Implement the approved README summary, `requirements.txt`-only dependency,
+common/declared entry-point, and `Not Found` rules for local repositories.
+Validate that the input path exists and is a directory. Empty directories
+must produce seven `Not Found` section values; invalid paths must fail
+clearly. Exclude common generated/dependency directories from recursive
+language scans, keep output independent of absolute paths, and sanitize
+recognized secrets before rendering. Preserve explicit output-path support.
 
-Tests needed:
-- Existing endpoint tests still run successfully.
-- Baseline test command confirms the project is in a valid state.
+Tests shall cover the AC1 fixture, missing metadata, empty repository,
+invalid paths, deterministic repeated output, generated-directory exclusion,
+and representative secret-like input.
 
-### T2: Confirm /version default configuration behavior
-Description: Validate the expected default configuration contract for the app when APP_ENV and APP_REGION are unset. This ensures the test exercises the intended default path before writing assertions.
+### T2: Add GitHub repository scanning and API error handling
 
-Acceptance criteria:
-- The application can be created/imported with APP_ENV and APP_REGION unset.
-- The default values are identified as environment = "development" and region = "local".
-- The environment is restored after validation to avoid cross-test leakage.
+Accept a validated GitHub `owner/name`, fetch repository facts and relevant
+files through the GitHub API using bounded requests, and render them through
+the same document format. Read an optional token only from its environment
+variable. Default remote output to `docs/PROJECT_DOC.md` under the current
+working directory; preserve an explicit output override. Return clear,
+sanitized non-zero failures for missing repositories, rate limits, timeouts,
+HTTP failures, and malformed responses.
 
-Tests needed:
-- A focused sanity check or test fixture that confirms the default values before final assertion coverage is added.
+Tests shall mock API success, missing repositories, rate limits, timeout,
+malformed responses, token use, and default/explicit output destinations.
+No test shall require a live repository or credential.
 
-### T3: Implement focused /version endpoint test
-Description: Add one endpoint test that calls GET /version with APP_ENV and APP_REGION unset, asserts HTTP 200, and validates the JSON response contract exactly.
+### T3: Add the push-to-main documentation workflow
 
-Acceptance criteria:
-- The test clears APP_ENV and APP_REGION before app creation/import.
-- The test restores those variables after execution.
-- The response status is 200.
-- The JSON contains version, environment, and region.
-- environment equals "development" and region equals "local".
-- The payload structure is checked strictly to avoid false positives.
+Add a dedicated GitHub Actions workflow for pushes to `main`. It shall set
+up Python 3.11, install declared dependencies, run local mode on the checked
+out repository, and commit `docs/PROJECT_DOC.md` only when it changed. Give
+the job only the permissions needed to push the generated update and avoid
+exposing token material in logs.
 
-Tests needed:
-- pytest test for GET /version default contract.
-- Optional negative assertion for malformed or missing payload keys if supported by the test framework.
+Validate the workflow structure and the no-change commit condition.
 
-### T4: Add CI execution for the new test
-Description: Ensure the new /version contract test runs in the normal CI pipeline so regressions are caught early.
+### T4: Verify end-to-end acceptance and update generated documentation
 
-Acceptance criteria:
-- The new test is part of the standard automated validation path.
-- CI runs the test without secrets or special setup.
-- Failures surface clearly in the result logs.
-
-Tests needed:
-- CI validation run or local equivalent of the project test command.
-- Review of the test output to confirm the test is executed and reported.
-
-### T5: Final verification and review
-Description: Validate the change is complete, narrow in scope, and consistent with the requirements and design review decisions.
-
-Acceptance criteria:
-- All relevant tests pass.
-- No secrets are introduced or required.
-- The implementation follows the project requirements and accepted architecture decisions.
-- The fix is reviewed for scope and clarity.
-
-Tests needed:
-- Final project test run.
-- Review of the updated files against requirements and design review decisions.
+Run the relevant tests and the complete pytest suite. Exercise local CLI
+success, empty repository, and invalid path behavior; verify GitHub behavior
+using mocks. Regenerate this repository's `docs/PROJECT_DOC.md`, check the
+seven section order, missing-value spelling, determinism, and absence of
+absolute paths or representative secrets. Record test evidence in the
+existing verification artifact only if that file is part of the task scope.
 
 ## 4. Dependency Order
 
 ```mermaid
 flowchart TD
-    T1[Project setup and test baseline] --> T2[Confirm /version default configuration behavior]
-    T2 --> T3[Implement focused /version endpoint test]
-    T3 --> T4[Add CI execution for the new test]
-    T4 --> T5[Final verification and review]
+    T1[Local scanning and CLI validation] --> T2[GitHub scanning and API handling]
+    T1 --> T3[Push-to-main workflow]
+    T2 --> T4[End-to-end verification]
+    T3 --> T4
 ```
 
-## 5. Blocked Tasks
+## 5. Definition of Done
 
-- T2 is blocked by T1 because the test environment and project baseline must exist before default configuration behavior can be validated.
-- T3 is blocked by T2 because the exact default contract must be confirmed before final assertions are implemented.
-- T4 is blocked by T3 because the test must exist before it can be integrated into CI.
-- T5 is blocked by T4 because the final check happens after the test is running in the standard validation path.
-
-## 6. Definition of Done
-- All required tests pass.
-- APP_ENV and APP_REGION are cleared before test app creation/import and restored afterward to validate default configuration behavior.
-- The /version endpoint test asserts HTTP 200 and the exact JSON contract for version, environment, and region.
-- The implementation uses no secrets and does not print environment values in logs.
-- The work matches the accepted architecture findings and does not broaden scope beyond the story.
-- Requirements, architecture, and design review are all consistent.
-- Final review is complete and no unresolved items remain.
+- The seven required sections are always present in the correct order.
+- Missing values are exactly `Not Found`; empty repos are non-crashing.
+- Invalid inputs and GitHub failures produce clear, sanitized non-zero
+  results.
+- Generated output is deterministic and contains no absolute local paths or
+  recognized secrets.
+- The GitHub Action runs on pushes to `main` and commits only changed output.
+- Focused tests and the full pytest suite pass.

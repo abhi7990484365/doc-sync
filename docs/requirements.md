@@ -1,62 +1,95 @@
 # Requirements
-## 1. User Story  (original text, with source)
-Source: Jira Story KAN-1, https://abhivachhani8.atlassian.net/browse/KAN-1
 
-Original text:
-"As a maintainer of the FastAPI demo service, I want automated tests for the existing GET /version endpoint so that changes to version/config output are detected early in CI and the endpoint contract remains stable."
+## 1. User Story
 
-The repository currently includes endpoint tests for /health and /hello/{name} but does not include a test validating the /version endpoint response. This story adds a focused test to confirm the endpoint returns HTTP 200 and includes the expected response fields (version, environment, region) based on the application defaults when environment variables are not set.
+As a developer on a project team, I want a command-line tool that scans a
+repository and generates `docs/PROJECT_DOC.md`, so that our documentation
+always matches the code and does not go stale.
 
-Acceptance Criteria:
-1. Scenario: GET /version returns expected response structure and default configuration values
-2. Given: The FastAPI application is running in the test suite without setting APP_ENV or APP_REGION environment variables
-3. When: A client sends a GET request to /version
-4. Then: The response status code is 200 and the JSON body contains keys "version", "environment", and "region", where "environment" equals "development" and "region" equals "local"
+The tool is named `doc-sync`. It accepts a local repository folder or a GitHub
+repository identified as `owner/name`. A GitHub Action runs it on pushes to
+`main` and commits the generated document only when it changes.
 
 ## 2. Goal and Scope
+
 In scope:
-- Add automated test coverage for the GET /version endpoint.
-- Validate the endpoint contract when APP_ENV and APP_REGION are unset.
-- Ensure the JSON response includes the expected keys and default values.
-- Catch regressions in CI.
+- Generate and update `docs/PROJECT_DOC.md` from local repositories and
+  GitHub repositories.
+- Generate the seven required documentation sections in the specified order.
+- Report invalid inputs and GitHub API failures clearly with a non-zero exit.
+- Run the generator from a GitHub Action on pushes to `main`.
+- Add automated tests for normal, empty, missing, and failure cases.
 
 Out of scope:
-- No production behavior changes for /version beyond validating the contract.
-- No unrelated refactors or broad test-suite changes.
-- No work on /health or /hello/{name} beyond their existing coverage.
+- Generating API reference documentation from source comments.
+- Supporting repository hosts other than GitHub.
+- A web interface.
 
 ## 3. Functional Requirements
-FR-1: The test suite shall exercise the GET /version endpoint.
 
-FR-2: The test shall run with APP_ENV and APP_REGION unset to validate default behavior.
-
-FR-3: The endpoint shall return HTTP 200 when requested in the test environment.
-
-FR-4: The response JSON shall include the keys "version", "environment", and "region".
-
-FR-5: When no environment variables are set, the response shall contain "environment" = "development" and "region" = "local".
-
-FR-6: The test shall be focused on the /version contract and suitable for CI validation.
+- FR-1: The CLI shall accept a local repository directory as input.
+- FR-2: The CLI shall accept a GitHub repository in `owner/name` form. Unless
+  an output path is supplied, GitHub mode shall write
+  `docs/PROJECT_DOC.md` under the current working directory.
+- FR-3: The CLI shall create or update `docs/PROJECT_DOC.md` with these
+  sections, in this exact order: Name, Description, Languages, Dependencies,
+  Entry Points, How to Run, Last Commit.
+- FR-4: Description shall come from the first non-empty paragraph in a
+  supported README file. It shall not infer a description from the repository
+  name or unrelated metadata.
+- FR-5: Dependencies shall be read from `requirements.txt` only.
+- FR-6: Entry Points shall include recognized common script entry points
+  (including `main.py` and `app.py`) and declared packaging entry points.
+- FR-7: Any required value that cannot be found shall be written exactly as
+  `Not Found`.
+- FR-8: An empty local repository shall produce the document with every
+  section value set to `Not Found` and shall not crash.
+- FR-9: Missing or invalid local paths and nonexistent GitHub repositories
+  shall produce a clear error and a non-zero exit code.
+- FR-10: GitHub API failures, timeouts, and rate limits shall be reported
+  clearly and shall not crash or hang.
+- FR-11: The GitHub token, when required, shall be read only from an
+  environment variable. Credentials shall not be written to files.
+- FR-12: Secrets, tokens, passwords, and absolute local paths shall not appear
+  in the generated document, logs, or error messages.
+- FR-13: Given unchanged repository content and commit metadata, repeated
+  runs shall produce identical output.
+- FR-14: The GitHub Action shall run on every push to `main` and commit the
+  generated document only when it has changed.
 
 ## 4. Non-Functional Requirements
-NFR-1: Security - The test must not expose or require secrets to validate the endpoint contract.
 
-NFR-2: Reliability - The test must consistently detect regressions in the /version response fields.
+- NFR-1: The tool shall run from the command line on Python 3.11.
+- NFR-2: A local scan of a typical repository with fewer than 1,000 files
+  shall complete in under 10 seconds.
+- NFR-3: The implementation shall use automated tests, including edge cases.
+- NFR-4: The tool shall use standard-library functionality where practical
+  and avoid adding unnecessary dependencies.
 
-NFR-3: Performance - The test must be lightweight and not add significant runtime overhead to the suite.
+## 5. Acceptance Criteria
 
-NFR-4: Maintainability - The test should remain single-purpose, readable, and easy to extend for future response changes.
-
-## 5. Assumptions and Constraints
-- The application is a FastAPI service.
-- The existing project already contains endpoint tests for /health and /hello/{name}.
-- The test environment does not set APP_ENV or APP_REGION.
-- The story is limited to validating the /version endpoint contract and default configuration values.
-- The requirement is intentionally narrow and does not include production logic changes beyond the test addition.
+- AC1: Given a local repository with a README, `requirements.txt`, and a main
+  script, the tool creates `docs/PROJECT_DOC.md` with all seven sections
+  populated from available data.
+- AC2: Any value that cannot be found is written exactly as `Not Found`; the
+  tool does not guess or invent values.
+- AC3: An empty repository produces a document where every section value is
+  `Not Found` and the command exits without crashing.
+- AC4: A missing or invalid path, or a GitHub repository that does not exist,
+  produces a clear error and a non-zero exit code.
+- AC5: GitHub API failures, timeouts, and rate limits are reported clearly
+  without crashing or hanging.
+- AC6: Secrets, tokens, and passwords do not appear in the generated
+  document, logs, or error messages. The GitHub token is read only from an
+  environment variable.
+- AC7: Running the tool twice against an unchanged repository produces
+  identical output.
+- AC8: The GitHub Action runs on pushes to `main` and commits the document
+  only when it has changed.
 
 ## 6. Clarification Log
-- Question: None required after story confirmation; the requirement was restated and finalized by the user.
-- Answer: The final requirement is to add a focused test verifying GET /version returns the default values for environment and region when the variables are unset.
 
-## 7. Open Items
-- None.
+- Description source: first non-empty README paragraph.
+- Entry point detection: common script files plus declared packaging entry
+  points.
+- Dependency source: `requirements.txt` only.
