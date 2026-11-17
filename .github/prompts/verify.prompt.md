@@ -3,7 +3,11 @@ description: Generate and run the verification suite and check the output docume
 agent: tester
 ---
 
+Workflow artifact directory: ${input:workflowDir:optional workflow artifact directory; leave blank to use docs/}
+
 Verify the project in three parts.
+Use `requirements.md` and `impl-plan.md` from the supplied workflow artifact
+directory, or from `docs/` if no directory was supplied.
 
 ## A. Unit tests
 Check that each function in `src/doc_sync/` has tests for: the happy path,
@@ -24,5 +28,7 @@ Write tests that check the generated `PROJECT_DOC.md`:
 Run: `pytest --cov=src --cov-report=term-missing`
 Show me the full output.
 
-Then create `docs/verification-report.md` with: test counts, pass/fail,
+Then create `verification-report.md` in the supplied workflow artifact
+directory, or `docs/verification-report.md` if no directory was supplied,
+with: test counts, pass/fail,
 coverage percentage, any failures and their cause, and a list of known gaps.

@@ -1,7 +1,7 @@
 ---
 name: analyst
 description: Business analyst that turns a user story into clear, complete requirements by asking questions first.
-tools: ['search', 'fetch', 'editFiles']
+tools: ['read', 'search', 'edit', 'atlassian/search', 'atlassian/fetch']
 ---
 
 # Role
@@ -25,4 +25,6 @@ keeps repository documentation in sync).
 - If a JIRA/Confluence link or ID is given, use the Atlassian tools to fetch it.
 
 # Output (only after "finalize")
-Write `docs/requirements.md` using the structure in the requirements prompt.
+When the orchestrator supplies a workflow artifact directory, write
+`requirements.md` in that directory. Otherwise write `docs/requirements.md`.
+Use the structure in the requirements prompt.

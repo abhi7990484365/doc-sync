@@ -3,10 +3,15 @@ description: Propose the high-level architecture from requirements.md.
 agent: architect
 ---
 
-Read `docs/requirements.md` and propose a high-level architecture.
+Workflow artifact directory: ${input:workflowDir:optional workflow artifact directory; leave blank to use docs/}
+
+Read `requirements.md` from the supplied workflow artifact directory, or
+`docs/requirements.md` if no directory was supplied. Propose a high-level
+architecture.
 
 Ask me up to 5 clarifying questions first if anything affects the design,
-then create `docs/architecture.md` with this structure:
+then create `architecture.md` in the supplied workflow artifact directory, or
+`docs/architecture.md` if no directory was supplied. Use this structure:
 
 # Architecture
 ## 1. Overview  (what the system does, in 3-4 lines)

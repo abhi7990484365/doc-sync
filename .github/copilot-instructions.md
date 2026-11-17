@@ -23,8 +23,12 @@ tools. Never write credentials or tokens into any file.
 4. Impl. planning -> docs/impl-plan.md
 5. Implementation, 6. Review, 7. Verify, 8. PR
 - Do not skip steps or write production code before the plan is approved.
-- Work on one task from `docs/impl-plan.md` at a time.
+- Work on one task from the active implementation plan at a time.
 - Always ask for my approval before creating or changing files.
+- For direct/manual workflows, use the standard `docs/` artifact paths. If an
+  orchestrator supplies a workflow artifact directory, read and write workflow
+  documents there instead; do not overwrite the standard docs with that run's
+  artifacts.
 
 ## Coding rules
 - Use type hints and short docstrings on public functions.

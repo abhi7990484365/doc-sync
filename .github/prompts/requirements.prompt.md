@@ -3,6 +3,8 @@ description: Capture and finalize requirements from a user story.
 agent: analyst
 ---
 
+Workflow artifact directory: ${input:workflowDir:optional workflow artifact directory; leave blank to use docs/}
+
 I will give you a user story (pasted in chat, attached as a Word file,
 or as a JIRA/Confluence link/ID).
 
@@ -12,7 +14,9 @@ Follow these steps:
 2. Read the story and summarise it back to me in 3 lines to confirm understanding.
 3. Ask clarifying questions, max 5 per round, and wait for my answers.
    Continue until I say "Create File".
-4. After I say "Create File", write `docs/requirements.md` with this structure:
+4. After I say "Create File", write `requirements.md` in the supplied workflow
+   artifact directory. If no directory was supplied, write
+   `docs/requirements.md`. Use this structure:
 
    # Requirements
    ## 1. User Story  (original text, with source)

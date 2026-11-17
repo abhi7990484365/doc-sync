@@ -36,3 +36,53 @@ For GitHub `owner/name` input, write the generated document to
 `docs/PROJECT_DOC.md` under the current working directory unless an explicit
 output path is supplied. This decision is recorded in the requirements and
 architecture.
+
+## Agent Orchestrator Design Review
+
+### Summary
+
+The proposed coordinator and sequential named-artifact handoffs cover the
+orchestrator requirements while preserving the existing approval gates.
+The review identified shared artifact paths and Copilot tool compatibility
+as implementation risks.
+
+### Findings
+
+| ID | Severity | Area | Problem | Recommendation | Decision |
+| --- | --- | --- | --- | --- | --- |
+| DR-AO-01 | High | Artifact retention | Existing prompts target shared `docs/*.md` paths, so later runs could overwrite prior workflow outputs and project documentation. | Use a unique, sanitized directory under `docs/workflows/` per run and pass it to every stage. | Accepted by user; architecture updated. |
+| DR-AO-02 | Medium | Copilot compatibility | Existing specialist agent files declare tools such as `editFiles` and `runCommands`, which may not be supported by the Copilot harness. | Update tool declarations to supported Copilot tools while preserving agent responsibilities, then verify in VS Code. | Accepted for architecture and implementation planning. |
+| DR-AO-03 | Medium | Approval handling | Specialist review agents are read-only and return review findings in chat; they cannot independently persist user decisions. | The orchestrator must collect user decisions and write review artifacts only after approval. | Covered by the architecture. |
+
+### Requirement Coverage
+
+| Requirement | Architecture support | Status |
+| --- | --- | --- |
+| FR-15 to FR-17 | User inputs, sequential delegation, and named workflow artifacts | Covered |
+| FR-18 to FR-19 | Planner inputs and dependency-ordered, one-task developer loop | Covered |
+| FR-20 to FR-21 | Approval checkpoints and ordered review/verification stages | Covered |
+| FR-22 to FR-24 | Stop-on-failure checks, tester report, and unique workflow directory | Covered |
+| NFR-5 to NFR-7 | Existing agent roles, durable handoffs, and project security rules | Covered |
+
+### Open Items
+
+- Copilot delegation and tool availability must be verified in the target
+  VS Code Copilot harness; static frontmatter checks are not sufficient.
+
+## Agent Orchestrator PR Publication Design Review
+
+### Findings
+
+| ID | Severity | Area | Finding | Recommendation | Decision |
+| --- | --- | --- | --- | --- | --- |
+| DR-AO-04 | High | Git publication | A coordinator that commits and pushes can accidentally publish unrelated work or push directly to the base branch. | Require explicit approval for commit, push, and PR actions; verify the current branch is not the base branch and stop if unapproved changes are present. | Accepted by user; implemented. |
+| DR-AO-05 | Medium | PR creation | A rerun may target a branch that already has an open PR, causing duplicate PRs. | Search for an open PR matching the current head and base; update it if found, otherwise create one. Never merge automatically. | Accepted by user; implemented. |
+| DR-AO-06 | Medium | PR evidence | A generated PR body could claim tests or list changes not supported by the completed run. | Build the PR description from actual changed files and the successful workflow verification report; stop if the report is missing or verification failed. | Accepted by user; implemented. |
+
+### Decision
+
+The PR stage runs only after successful verification. It keeps the existing
+human approval gates, targets `main` by default, updates a matching open PR
+when available, and never merges. Copilot/GitHub CLI authentication and
+delegation behavior still require runtime validation in the target VS Code
+harness.

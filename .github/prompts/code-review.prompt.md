@@ -3,7 +3,11 @@ description: Review the implementation against the 7-point checklist before crea
 agent: reviewer
 ---
 
-Review all code in `src/` and `tests/` against `docs/requirements.md`.
+Workflow artifact directory: ${input:workflowDir:optional workflow artifact directory; leave blank to use docs/}
+
+Review all code in `src/` and `tests/` against `requirements.md` in the
+supplied workflow artifact directory, or `docs/requirements.md` if no
+directory was supplied.
 Check each area below and give a verdict of Pass / Issues found for each.
 
 | Area | Question |

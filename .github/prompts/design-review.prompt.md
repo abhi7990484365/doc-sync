@@ -3,7 +3,11 @@ description: Review architecture.md for risks and gaps before implementation.
 agent: reviewer
 ---
 
-Review `docs/architecture.md` against `docs/requirements.md`.
+Workflow artifact directory: ${input:workflowDir:optional workflow artifact directory; leave blank to use docs/}
+
+Review `architecture.md` against `requirements.md` from the supplied workflow
+artifact directory. If no directory was supplied, use the corresponding files
+in `docs/`.
 
 Produce:
 1. **Summary** (3 lines: overall verdict)
