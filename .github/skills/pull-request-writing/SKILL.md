@@ -67,6 +67,8 @@ Identify approved implementation files and exclude unrelated changes.
 
 Do not discard, overwrite, or silently stage unrelated user changes.
 
+If terminal or `gh` is unavailable, inspect the available GitHub MCP tools. MCP may support remote repository/branch/PR inspection, duplicate checks, PR creation, and verification. It cannot establish the state of uncommitted local changes or substitute for local staging, commits, or pushes. If local changes need publishing and local Git operations are unavailable, stop safely before creating a PR.
+
 ## Step 4: Prepare Branch
 
 If the current branch is already an appropriate feature branch, reuse it.
@@ -146,9 +148,11 @@ Never force-push.
 
 ## Step 8: Create GitHub Pull Request
 
-Use GitHub CLI or an available GitHub integration.
+Use GitHub CLI or available GitHub MCP tools. If `gh` is unavailable, use MCP for supported remote-side inspection and PR operations.
 
 Verify the repository, source branch, target branch, and pushed commit.
+
+Use MCP to create a PR only when the approved source branch and required commit are verified on the remote. Do not claim local changes were included unless their commit and push were actually completed and verified.
 
 Check whether an appropriate PR already exists.
 

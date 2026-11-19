@@ -53,6 +53,8 @@ Inspect the actual diff.
 
 Exclude unrelated user changes.
 
+If terminal or `gh` is unavailable, inspect the available GitHub MCP tools. MCP may be used for remote branch/PR inspection and PR creation, but it does not replace local `git status`, diff review, staging, committing, or pushing. If local changes need publication and those local operations cannot be performed, stop safely.
+
 ### Step 4: Prepare Feature Branch
 
 Reuse the appropriate feature branch if available.
@@ -86,11 +88,13 @@ Verify the actual commit and push results.
 
 ### Step 7: Create GitHub PR
 
-Use authenticated GitHub CLI (`gh`) or an available GitHub integration.
+Use authenticated GitHub CLI (`gh`) or available GitHub MCP tools. If `gh` is unavailable, use MCP for supported remote branch inspection, duplicate-PR lookup, PR creation, and verification.
 
 Verify the repository, source branch, and target branch.
 
 Check for an existing PR before creating a new one.
+
+MCP may create a PR only after verifying that the approved source branch and its required commit are already present on the remote. Never imply that uncommitted local changes were included unless an available tool actually committed and pushed them and that result was verified.
 
 Create the PR using the required six-section structure.
 

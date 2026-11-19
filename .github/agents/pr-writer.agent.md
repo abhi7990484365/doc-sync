@@ -64,7 +64,9 @@ A Passed with Limitations result can proceed if the limitations are clearly docu
 
 ## Git Workflow
 
-Use the available terminal command tool to execute Git operations.
+Use the available terminal command tool to execute local Git operations. If terminal or `gh` is unavailable, inspect the available GitHub MCP tools and use them for supported remote GitHub operations.
+
+GitHub MCP may be used to inspect branches and pull requests, check for duplicates, create a pull request, and verify its publication when the source branch is already pushed and the required commit is present on the remote. It does not substitute for inspecting local working-tree changes, staging files, creating local commits, or pushing them. If local changes need publishing and Git operations are unavailable, stop before publication rather than reconstructing or silently omitting those changes.
 
 ### 1. Inspect the repository
 
@@ -150,7 +152,7 @@ Never force-push.
 
 ### 7. Create GitHub Pull Request
 
-Use authenticated GitHub CLI (`gh`) or an available GitHub integration.
+Use authenticated GitHub CLI (`gh`) or available GitHub MCP tools. Check the available integration tools before concluding that remote PR operations are unavailable. Use MCP for supported remote inspection, duplicate checks, PR creation, and publication verification when `gh` is unavailable.
 
 Verify the repository and branches before creating the PR.
 
@@ -159,6 +161,8 @@ Use the repository default branch as the target unless another target was explic
 Check for an existing PR for the same source and target branches.
 
 If an appropriate PR already exists, do not create a duplicate. Report the existing PR or update it only when the relationship to the selected task is clear.
+
+If Git or push access is unavailable, MCP may still create a PR only when the approved source branch and required commit have already been verified on the remote and the PR body and `docs/pull-request.md` content are ready. Do not claim that MCP has staged, committed, or pushed local workspace changes unless an available tool actually performed and verified those actions.
 
 Create the PR with:
 

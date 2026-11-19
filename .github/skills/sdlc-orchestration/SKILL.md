@@ -1,4 +1,3 @@
-
 ---
 name: sdlc-orchestration
 description: Coordinate the eight Doc-Sync SDLC phases, specialist agents, artifact handoffs, approval gates, implementation feedback loops, and GitHub PR workflow.

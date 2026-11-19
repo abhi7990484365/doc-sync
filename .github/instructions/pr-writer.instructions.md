@@ -109,9 +109,11 @@ Do not claim that a commit or push succeeded unless the command reports success.
 
 If Git identity, remote configuration, permissions, or authentication is missing, stop and report the exact issue.
 
+When terminal/Git access is unavailable, do not claim local changes were inspected, staged, committed, or pushed. If those local operations are required, stop before publication. A GitHub MCP integration may be used for remote-side PR operations only when the approved source branch and commit already exist on the remote and can be verified.
+
 ## 7. GitHub Pull Request Creation
 
-Use the authenticated GitHub CLI (`gh`) or an available GitHub integration.
+Use the authenticated GitHub CLI (`gh`) or available GitHub MCP tools. Check available MCP capabilities before declaring PR operations unavailable. When `gh` is unavailable, use GitHub MCP for supported repository/branch inspection, existing-PR lookup, PR creation, and post-creation verification.
 
 Before creating a PR:
 
@@ -122,6 +124,8 @@ Before creating a PR:
 - Check whether an appropriate PR already exists.
 
 If an appropriate PR already exists, update it only when the current task clearly belongs to that PR. Otherwise, report the existing PR and ask how to proceed.
+
+GitHub MCP can publish a PR from a verified remote source branch but does not by itself prove or publish uncommitted local workspace changes. Do not use it to bypass the Git safety checks or to claim local commit/push operations occurred.
 
 Create the PR with the required sections:
 
