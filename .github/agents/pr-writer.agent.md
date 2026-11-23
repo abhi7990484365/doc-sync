@@ -93,13 +93,13 @@ Use authenticated GitHub CLI (`gh`) or available GitHub MCP tools for supported 
 - Create a PR only when the source branch and required commit are verified on the remote.
 - Use a draft PR only when explicitly requested or authorized for Failed or Blocked testing.
 
-The PR must have a meaningful title, complete body, and correct source and target branches. Include the six required documentation sections.
+The PR must have a meaningful title prefixed with `[AI generated]`, a complete body, and correct source and target branches. Include the six required documentation sections.
 
 GitHub MCP may inspect remote branches and PRs, check for duplicates, create PRs, and verify publication when supported. It does not replace local staging, committing, or pushing. Never claim a local action occurred unless a tool performed and verified it.
 
 ### 7. Verify publication
 
-Verify that the PR exists, its URL is available, its branches are correct, and its title and body are complete.
+VVerify that the PR exists, its URL is available, its branches are correct, its title begins with `[AI generated]`, and its body is complete. Verify the `AI generated` label when applicable.
 
 If publication details must be added to `docs/pull-request.md`, update the document, commit the update, and push it.
 
