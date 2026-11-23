@@ -116,29 +116,21 @@ Use the specialist agents for their defined responsibilities:
 
 Do not ask one specialist to approve its own work when an independent review is required.
 
-## 6. Workflow State Tracking
+## 6. Workflow State
 
-Maintain a clear status for each phase:
+Track the current phase, agent, status, approvals, artifacts, blockers, and next action.
 
-- Not Started
-- In Progress
-- Awaiting User Approval
-- Blocked
-- Changes Required
-- Completed
+Use `docs/sdlc-state.md` only after the user approves creating or updating it. Mark a phase Completed only after verifying its output.
 
-Track:
-- Current phase
-- Responsible agent
-- Required input artifacts
-- Produced output artifacts
-- Approval outcome
-- Outstanding findings
-- Next permitted action
+### Resume Behavior
 
-Do not mark a phase Completed until its required output and outcome have been verified.
+When `/sdlc` starts or resumes:
+1. Read `docs/sdlc-state.md` if it exists.
+2. Verify its status against the relevant artifacts.
+3. Continue from the first incomplete phase without repeating completed work.
+4. If the state is missing or unclear, ask the user how to proceed.
 
-If persistent workflow tracking is needed, use a project status file only after the user approves creating or updating it. Do not silently introduce a new mandatory artifact.
+Update the state after phase transitions and handoffs, following the required approval rules. Resume works only if the orchestrator is configured to read and follow the state file.
 
 ## 7. User Interaction
 

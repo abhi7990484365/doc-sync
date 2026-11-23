@@ -43,14 +43,14 @@ If the path is missing, inaccessible, or ambiguous, stop and ask the user to res
 
 | Agent | Responsibility |
 |---|---|
-| Analyst | Requirements discovery |
-| Architect | Architecture design |
-| Design Reviewer | Independent architecture review |
-| Planner | Implementation planning |
-| Developer | Code implementation |
-| Code Reviewer | Independent code review |
-| Tester | Testing and verification |
-| PR Writer | Commit, push, and GitHub PR creation |
+| analyst | Requirements discovery |
+| architect | Architecture design |
+| design-reviewer | Independent architecture review |
+| planner | Implementation planning |
+| developer | Code implementation |
+| code-reviewer | Independent code review |
+| tester | Testing and verification |
+| pr-writer | Commit, push, and GitHub PR creation |
 
 ## SDLC Sequence
 

@@ -14,10 +14,10 @@ Coordinate the eight SDLC phases in the defined order.
 
 1. Requirements — analyst
 2. Architecture — architect
-3. Design Review — design reviewer
+3. Design Review — design-reviewer
 4. Implementation Planning — planner
 5. Implementation — developer
-6. Code Review — code reviewer
+6. Code Review — code-reviewer
 7. Verify — tester
 8. PR — pr-writer
 
