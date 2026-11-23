@@ -1,61 +1,100 @@
 # Copilot Instructions: doc-sync
 
-## Project
-doc-sync is a Python CLI that scans a repository (local path or GitHub API)
-and generates/updates `docs/PROJECT_DOC.md`. A GitHub Action re-runs it on push
-so documentation never goes stale.
+## User Story Source
+- If I provide a Jira issue key or Confluence link, retrieve it using the Atlassian MCP tools.
+- Never write credentials or tokens into any file.
 
-## User story source
-- If I give a JIRA issue key or Confluence link, fetch it with the Atlassian MCP
-tools. Never write credentials or tokens into any file.
+## Tech Stack
+- Python 3.11; prefer the standard library and add dependencies only when needed.
+- `pytest` for tests and `pytest-cov` for coverage.
+- `requests` for GitHub API calls.
+- `pip-audit` for dependency safety.
+- Project layout: `src/`, `tests/`, `docs/`.
 
-## Tech stack
-- Python 3.11, standard library first; add a dependency only when needed
-- `pytest` for tests, `pytest-cov` for coverage
-- `requests` for GitHub API calls
-- `pip-audit` for dependency safety
-- Layout: `src/`, `tests/`, `docs/`
+## SDLC Workflow
+Follow these steps in order:
+1. Requirements 
+2. Architecture 
+3. Design review 
+4. Implementation planning
+5. Implementation
+6. Code review
+7. Verification
+8. Pull request
 
-## SDLC workflow (follow in order)
-1. Requirements  -> docs/requirements.md
-2. Architecture  -> docs/architecture.md
-3. Design review -> docs/design-review.md
-4. Impl. planning -> docs/impl-plan.md
-5. Implementation, 6. Review, 7. Verify, 8. PR
-- Do not skip steps or write production code before the plan is approved.
-- Work on one task from `docs/impl-plan.md` at a time.
-- Always ask for my approval before creating or changing files.
+- Do not skip steps or write production code before the implementation plan is approved.
+- Work on one task from the active implementation plan at a time.
+- Ask for my approval before creating or changing files.
+- For direct/manual workflows, use the standard `docs/` artifact paths.
+- If the orchestrator supplies a workflow artifact directory, use it for that run. Do not overwrite standard `docs/` artifacts with workflow-specific outputs.
+- Keep workflow progress and decisions in `docs/sdlc-state.md` or the state file designated by the orchestrator.
 
-## Coding rules
+## Instructions, Skills, and Rules
+- Follow shared and folder-specific instructions that apply to the files being changed.
+- Use an agent's skills for relevant task procedures; do not duplicate entire skills in the main instructions.
+- Treat rules as constraints that must be followed, including security, scope, and approval requirements.
+- Keep instructions and handoffs concise. Avoid repeating the same guidance across agents, instructions, skills, and rules.
+
+## Context and Artifact Management
+- Use source documents as evidence; do not pass entire documents to the next agent when only selected information is needed.
+- Extract relevant requirements, business rules, constraints, dependencies, risks, and open questions. Exclude unrelated or duplicate content while preserving source references.
+- Give each requirement and workflow run a stable ID when applicable.
+- Keep artifacts for separate requirements or runs in separate folders or clearly identified files. Never silently overwrite existing artifacts.
+- Before updating an existing artifact, identify it and obtain approval. Make clear whether the action creates a new artifact or updates an existing one.
+- Handoffs must identify the source requirement, artifact path, status, unresolved questions, and next action.
+- Treat approved project artifacts and state files as the source of truth, not chat history.
+
+## Coding Rules
 - Use type hints and short docstrings on public functions.
-- Function names must be self-explanatory; keep functions small (one job each).
-- No duplicated logic: put shared code in one helper function.
+- Use self-explanatory function names and keep functions small, with one clear responsibility each.
+- Avoid duplicated logic; put shared behavior in a helper.
 - Follow PEP 8.
 
-## Missing data rule
-- If a field, file, or value cannot be found, write exactly `Not Found`.
+## Missing Data
+- If a required field, file, or value cannot be found, write exactly `Not Found`.
 - Never guess, invent, or fill in placeholder values.
+- Clearly distinguish confirmed facts, assumptions, and unresolved questions.
 
-## Error handling
-- Handle API failures, timeouts, rate limits, missing files, and empty repos
-  without crashing. Return a clear message and a non-zero exit code.
+## Error Handling and Recovery
+- Handle API failures, timeouts, rate limits, missing files, and empty repositories without crashing.
+- Return a clear error message and a non-zero exit code when a command fails.
+- Define retry limits for transient failures; do not repeatedly retry errors that require a code change or user decision.
+- Record the failed stage, error, and completed work in the workflow state.
+- On resume, inspect the state, artifacts, and Git status. Continue from the last incomplete stage and avoid repeating completed work.
+- If the state is missing or ambiguous, ask rather than guess.
 
 ## Security
-- Never print, log, or write secrets, tokens, or passwords to output or docs.
-- Read credentials only from environment variables, never hard-code them.
-- Validate and sanitise all user input (paths, repo names, URLs).
+- Never print, log, or write secrets, tokens, or passwords to output or documentation.
+- Read credentials only from environment variables; never hard-code them.
+- Validate and sanitize user input, including paths, repository names, and URLs.
+- Do not include secrets, sensitive `.env` files, or unrelated user changes in commits or PRs.
 
 ## Testing
-- Every function gets tests for the happy path AND these edge cases:
-  Not Found, missing field, empty repo, API failure.
-- Run `pytest` after code changes and show me the result.
+- Add tests for happy paths and relevant edge cases, including missing data, empty repositories, and API failures.
+- Run `pytest` after code changes and report the actual result.
+- Do not invent test evidence or modify tests to hide failures.
+- Record failed, blocked, and skipped tests with reasons.
 
-## Commits and PRs
-- Use Conventional Commits (feat:, fix:, docs:, test:, chore:).
-- Small, focused commits: one per task.
-- Every PR must include: Summary, Changes Made, Test Evidence,
-  Known Limitations, and Reviewer Checklist.
+## Hooks
+- Keep hook configuration separate from agent instructions and skills.
+- Use hooks for event-triggered checks or guardrails; do not rely on hooks alone for workflow retries or resume behavior.
+- Use repository branch protection or rulesets to enforce GitHub branch restrictions. Agent instructions and local hooks are additional safeguards, not substitutes for repository enforcement.
 
-## How to talk to me
+## Commits and Pull Requests
+- Use Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`, or `chore:`.
+- Keep commits small and focused, preferably one per task.
+- Never push directly to the default branch or force-push.
+- Every PR must include:
+  - Summary
+  - Changes Made
+  - Test Evidence
+  - Known Limitations
+  - Reviewer Checklist
+- Prefix PR titles with `[AI generated]`.
+- Apply the `AI generated` label if it already exists. Do not create it automatically; report if it is unavailable.
+- Verify the PR URL, source and target branches, title, body, and label status after creation.
+
+## How to Talk to Me
 - Keep answers short and simple.
 - Ask when unclear instead of assuming.
+- Report what was actually completed, what failed, and what needs my approval.

@@ -7,6 +7,8 @@
 
 - Python 3.11
 - Dependencies from `requirements.txt`
+- Before changing files, check the current Git branch. If it is `main`, create
+  and switch to a new working branch before making any changes.
 
 Install dependencies with:
 
@@ -40,3 +42,20 @@ python -m src.doc_sync owner/name --output docs/PROJECT_DOC.md
 The generated document contains Name, Description, Languages, Dependencies,
 Entry Points, How to Run, and Last Commit sections. Missing values are written
 as `Not Found`.
+
+## Agent Workflow
+
+The workspace also provides a Copilot orchestrator for the project SDLC
+agents. In VS Code Copilot Chat, select the `orchestrator` agent or use the
+`orchestrate` prompt, then provide both a user story and requirement text.
+
+The orchestrator passes approved artifacts through the analyst, architect,
+design review, planner, developer, code review, tester, and final PR-writer
+stages. It pauses for clarifications and approvals, runs implementation
+tasks one at a time, and stops if a stage fails or its required output is
+missing. After successful verification, the PR writer can commit approved
+changes, push the feature branch, and create a pull request or update an
+existing open one, with separate approval before each publication action.
+It never merges automatically. Each run stores its artifacts in a unique
+directory under `docs/workflows/` without replacing the project-level
+documentation.
