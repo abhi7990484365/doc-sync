@@ -17,8 +17,6 @@ Verify that implemented functionality meets approved requirements, architecture,
 ## Instructions
 
 Follow:
-- `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 - `.github/instructions/tester.instructions.md`
 - `.github/skills/testing-and-verification/SKILL.md`
 

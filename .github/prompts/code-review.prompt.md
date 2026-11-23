@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Independently review the implementation of a selected Doc-Sync task and create a structured code review report.
-agent: code reviewer
+agent: code-reviewer
 ---
 
 # Code Review Workflow

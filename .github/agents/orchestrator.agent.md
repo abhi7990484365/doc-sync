@@ -23,7 +23,6 @@ Do not replace specialist agents or approve their work independently.
 
 Follow:
 - `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 
 Use the configured agent names and supported delegation capabilities. Do not assume agents share conversation state or claim an agent completed work without its actual result.
 

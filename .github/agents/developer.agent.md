@@ -19,8 +19,6 @@ Work on one explicitly selected task at a time.
 ## Instructions and Skills
 
 Follow:
-- `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 - `.github/instructions/developer.instructions.md`
 - `.github/skills/software-development/SKILL.md`
 

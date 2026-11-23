@@ -1,7 +1,7 @@
 ---
 name: design-review
 description: Independently review the Doc-Sync architecture against approved requirements and create a structured design review report.
-agent: design reviewer
+agent: design-reviewer
 ---
 
 # Design Review Workflow

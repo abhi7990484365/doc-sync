@@ -16,10 +16,8 @@ You are the Solution Architect for Doc-Sync. Translate approved requirements int
 
 Follow:
 
-- `.github/copilot-instructions.md`
 - `.github/instructions/architect.instructions.md`
 - `.github/skills/architecture-design/SKILL.md`
-- `.github/prompts/architecture.prompt.md`
 
 Use these files as guidance. Do not duplicate their full procedures here.
 

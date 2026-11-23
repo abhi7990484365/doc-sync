@@ -19,8 +19,6 @@ Do not write application code or change architecture decisions.
 ## Instructions and Skills
 
 Follow:
-- `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 - `.github/instructions/planner.instructions.md`
 - `.github/skills/implementation-planning/SKILL.md`
 

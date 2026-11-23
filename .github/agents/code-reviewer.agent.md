@@ -18,8 +18,6 @@ Identify defects, risks, and test gaps. Do not implement fixes or modify source 
 ## Instructions and Skills
 
 Follow:
-- `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 - `.github/instructions/code-reviewer.instructions.md`
 - `.github/skills/code-review/SKILL.md`
 

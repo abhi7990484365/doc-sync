@@ -19,8 +19,6 @@ Do not redesign the architecture or modify the Architect’s work during the rev
 ## Instructions and Skills
 
 Follow:
-- `.github/copilot-instructions.md`
-- `.github/instructions/instructions.md`
 - `.github/instructions/design-reviewer.instructions.md`
 - `.github/skills/design-review/SKILL.md`
 
