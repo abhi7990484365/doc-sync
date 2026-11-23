@@ -7,269 +7,147 @@ description: Coordinate the eight Doc-Sync SDLC phases, specialist agents, artif
 
 ## Objective
 
-Coordinate the complete Doc-Sync workflow using specialist agents and repository artifacts.
-
-The Orchestrator ensures that every phase receives the required inputs, produces its expected outputs, and satisfies its approval gates before the next phase begins.
+Coordinate the Doc-Sync workflow through specialist agents and repository artifacts. Verify each phase’s inputs, outputs, and required approvals before advancing.
 
 ## Phase 1: Requirements
 
 **Agent:** analyst
 
-### Input
-- User story or business requirements.
-- Available source material, such as Jira, Confluence, Word, or user-provided content.
+**Input:** User story, business requirements, and available source material.
 
-### Expected output
-- `docs/requirements.md`
+**Output:** `docs/requirements.md`
 
-### Validation
-- Requirements are classified as Confirmed, Assumption, Not Found, or Open.
-- Functional requirements and non-functional requirements are identifiable.
-- Acceptance criteria are testable.
-- Requirement traceability is available.
-- User approval is recorded.
+Verify that requirements are classified as Confirmed, Assumption, Not Found, or Open; functional and non-functional requirements are identifiable; acceptance criteria are testable; and traceability is available.
 
-Do not proceed to Architecture until requirements are approved.
+Obtain user approval before Architecture.
 
 ## Phase 2: Architecture
 
 **Agent:** architect
 
-### Input
-- Approved `docs/requirements.md`
+**Input:** Approved `docs/requirements.md`
 
-### Expected output
-- `docs/architecture.md`
+**Output:** `docs/architecture.md`
 
-### Validation
-- Architecture addresses approved requirements.
-- Components and data flows are documented.
-- Technical decisions and open questions are recorded.
-- Security considerations and trust boundaries are addressed where applicable.
-- Architecture is ready for independent review.
-- User approval is obtained before Design Review.
+Verify that the architecture addresses approved requirements and documents components, data flows, technical decisions, open questions, and applicable security considerations.
+
+Obtain user approval before Design Review.
 
 ## Phase 3: Design Review
 
 **Agent:** design reviewer
 
-### Input
-- `docs/requirements.md`
-- `docs/architecture.md`
+**Input:** `docs/requirements.md`, `docs/architecture.md`
 
-### Expected output
-- `docs/design-review.md`
+**Output:** `docs/design-review.md`
 
-### Outcome handling
+Keep the review independent of the Architect.
 
-| Outcome | Orchestrator action |
-|---|---|
-| Approved | Continue to Planning |
-| Approved with Conditions | Track conditions and obtain required acceptance |
-| Changes Required | Return findings to Architect and repeat review |
-| Unable to Complete | Stop and resolve missing information |
-
-The Design Reviewer must remain independent of the Architect.
+- **Approved:** Continue to Planning.
+- **Approved with Conditions:** Track conditions and obtain any required acceptance.
+- **Changes Required:** Return findings to the Architect and repeat the review.
+- **Unable to Complete:** Stop and resolve missing information.
 
 ## Phase 4: Implementation Planning
 
 **Agent:** planner
 
-### Input
-- `docs/requirements.md`
-- `docs/architecture.md`
-- `docs/design-review.md`
+**Input:** Approved requirements, architecture, and design review.
 
-### Expected output
-- `docs/impl-plan.md`
+**Output:** `docs/impl-plan.md`
 
-### Validation
-- Tasks have unique IDs.
-- Dependencies are identified.
-- Priorities are assigned.
-- Completion criteria are testable.
-- Requirement-to-task traceability exists.
-- Design review conditions are addressed.
+Verify that tasks have unique IDs, priorities, dependencies, testable completion criteria, requirement traceability, and coverage of design review conditions.
 
-Obtain user approval before implementation begins.
+Obtain user approval before implementation.
 
 ## Phase 5: Implementation
 
 **Agent:** developer
 
-### Input
-- Approved requirements.
-- Approved architecture.
-- Accepted design review.
-- Approved implementation plan.
+**Input:** Approved requirements, architecture, design review, and implementation plan.
 
-### Execution
-- Select one task ID.
-- Verify dependencies.
-- Inspect the existing repository.
-- Implement only the selected task.
-- Add or update relevant tests.
-- Execute applicable checks.
-- Report actual implementation evidence.
+For each authorized task:
 
-### Validation
-- Confirm the selected task's changes exist.
-- Confirm actual test execution results.
-- Confirm scope matches the approved task.
+1. Confirm the selected task ID and its dependencies.
+2. Inspect the repository.
+3. Implement only the selected task.
+4. Add or update relevant tests and run applicable checks.
+5. Report the changes and actual test evidence.
 
-Do not automatically start the next task.
-
-The user must select or authorize the next implementation task.
+Verify that the changes match the approved task and its scope. Do not start another task automatically; the user must select or authorize it.
 
 ## Phase 6: Code Review
 
 **Agent:** code reviewer
 
-### Input
-- Actual implementation changes.
-- Approved requirements.
-- Architecture.
-- Design review.
-- Implementation plan.
+**Input:** Actual changes and the approved requirements, architecture, design review, and implementation plan.
 
-### Expected output
-- `docs/code-review.md`
+**Output:** `docs/code-review.md`
 
-### Outcome handling
+- **Approved:** Continue to Verification.
+- **Approved with Conditions:** Track conditions and determine whether verification can proceed.
+- **Changes Required:** Return findings to the Developer and repeat review.
+- **Unable to Complete:** Stop and resolve blockers.
 
-| Outcome | Orchestrator action |
-|---|---|
-| Approved | Continue to Verification |
-| Approved with Conditions | Track conditions and determine whether they permit verification |
-| Changes Required | Return findings to Developer and repeat review |
-| Unable to Complete | Stop and resolve blockers |
-
-Unresolved Critical or High findings prevent progression to final verification.
+Unresolved Critical or High findings block final verification.
 
 ## Phase 7: Verification
 
 **Agent:** tester
 
-### Input
-- Approved implementation changes.
-- Requirements and acceptance criteria.
-- Architecture and design review.
-- Implementation plan.
-- Code review findings and outcome.
+**Input:** Approved implementation, requirements, architecture, design review, implementation plan, and code review.
 
-### Expected output
-- `docs/test-report.md`
+**Output:** `docs/test-report.md`
 
-### Verification scope
+Verify applicable unit, integration, regression, API/UI, security-related, and documentation behavior.
 
-Where applicable, verify:
-- Unit tests.
-- Integration tests.
-- Regression tests.
-- API or UI behavior.
-- Security-related behavior.
-- Documentation content and quality.
+- **Passed:** Continue to PR.
+- **Passed with Limitations:** Document limitations and assess readiness.
+- **Failed:** Return failures to the Developer, then repeat Code Review and relevant testing.
+- **Blocked:** Stop and report blockers.
 
-### Outcome handling
-
-| Outcome | Orchestrator action |
-|---|---|
-| Passed | Continue to PR |
-| Passed with Limitations | Record limitations and assess release readiness |
-| Failed | Return failures to Developer, then repeat review and testing |
-| Blocked | Stop and report blockers |
-
-After Developer fixes, repeat Code Review before relevant retesting.
+After a code change, repeat Code Review before relevant retesting.
 
 ## Phase 8: Pull Request
 
-**Agent:**  pr-writer
+**Agent:** pr-writer
 
-### Input
-- Approved requirements.
-- Architecture.
-- Design review.
-- Implementation plan.
-- Code review.
-- Test report.
-- Actual source changes and Git information.
+**Input:** Approved artifacts, actual source changes, and Git information.
 
-### Expected output
-- `docs/pull-request.md`
-- Git commit.
-- Pushed feature branch.
-- GitHub Pull Request URL.
+**Output:** `docs/pull-request.md`, commit, pushed feature branch, and verified GitHub PR URL.
 
-### Validation
-- Required review and test gates are satisfied.
-- Only approved files are committed.
-- Feature branch is pushed successfully.
-- PR contains all required sections.
-- PR URL is verified.
+Verify that review and test gates are satisfied, only approved files are committed, the branch is pushed, and the PR contains the required sections.
 
-The PR Writer workflow must be explicitly started. Its defined authorization permits committing approved changes, pushing the feature branch, and creating the PR.
-
-Merging is not included.
+The PR Writer workflow must be explicitly started. It may commit approved changes, push the feature branch, and create the PR. It must not merge the PR.
 
 ## Feedback Loops
 
-### Architecture correction loop
+- **Architecture:** Design Reviewer → Architect → Design Reviewer
+- **Code:** Code Reviewer → Developer → Code Reviewer
+- **Testing:** Tester → Developer → Code Reviewer → Tester
 
-design reviewer -> architect -> design reviewer.
-
-Repeat until the architecture review is acceptable.
-
-### Code correction loop
-
-code reviewer -> developer -> code reviewer.
-
-Repeat until code review is acceptable.
-
-### Test failure loop
-
-tester -> developer -> code reviewer -> tester.
-
-Repeat relevant checks after changes.
-
-Do not bypass these loops.
+Repeat the relevant loop until its gate is satisfied. Do not bypass review or testing.
 
 ## Handoff Protocol
 
 For each handoff, provide:
 
-1. Current phase.
-2. Previous agent's outcome.
-3. Required input artifact paths.
-4. Relevant task, requirement, and finding IDs.
-5. Expected output artifact.
-6. Approval or authorization requirements.
+1. Current phase and previous outcome
+2. Required input artifact paths
+3. Relevant task, requirement, and finding IDs
+4. Expected output artifact
+5. Required approval or authorization
 
 Verify the actual output before advancing.
 
 ## Execution Modes
 
-### Guided mode
+- **Guided:** Run one phase at a time and wait at approval gates.
+- **Phase continuation:** Resume from a specified phase only after verifying prerequisite artifacts and approvals.
+- **Status:** Inspect artifacts and report progress without modifying files.
 
-Execute one phase at a time and wait for user approval at required gates.
-
-### Phase continuation
-
-Continue from a specified phase only after verifying all prerequisite artifacts and approvals.
-
-### Status mode
-
-Inspect existing artifacts and report workflow progress without modifying files.
-
-Do not assume that full autonomous execution is enabled merely because the Orchestrator is started.
+Starting the Orchestrator does not authorize fully autonomous execution.
 
 ## Final Status
 
-Report:
-
-- Phase status.
-- Completed agents.
-- Generated artifacts.
-- Pending approvals.
-- Open findings.
-- Blockers.
-- Next permitted action.
+Report phase status, completed agents, generated artifacts, pending approvals, open findings, blockers, and the next permitted action.

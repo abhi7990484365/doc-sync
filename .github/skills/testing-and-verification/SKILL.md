@@ -1,36 +1,21 @@
 ---
 name: testing-and-verification
-description: Perform comprehensive unit, integration, regression, and documentation quality testing for Doc-Sync. Use when verifying implemented tasks, executing automated tests, validating acceptance criteria, or preparing docs/test-report.md.
+description: Perform unit, integration, regression, and documentation quality testing for Doc-Sync. Use when verifying implemented tasks, executing tests, checking acceptance criteria, or preparing docs/test-report.md.
 ---
 
 # Testing and Verification
 
 ## Purpose
 
-Verify that the Doc-Sync implementation satisfies approved requirements and acceptance criteria.
+Verify that the implementation meets approved requirements and acceptance criteria.
 
-Perform comprehensive unit and integration testing, regression checks, and final documentation quality validation.
-
-The Tester Agent defines the role, tools, responsibilities, and decision boundaries.
-
-This skill defines the reusable testing and verification procedure.
-
-The Testing Prompt starts the workflow.
+The Tester Agent defines the role and boundaries. This skill defines the testing procedure. The Testing Prompt starts the workflow.
 
 ## When to Use
 
-Use this skill when:
+Use after implementation and code review when tests, acceptance criteria, regression checks, or documentation need verification.
 
-- Implementation tasks have been completed.
-- Code review has been completed.
-- Unit tests need to be executed.
-- Integration tests need to be executed.
-- Acceptance criteria need verification.
-- Regression testing is required.
-- Generated documentation needs quality validation.
-- A final test report needs creation.
-
-Do not use this skill to implement application features or independently redesign architecture.
+Do not implement application features or redesign architecture.
 
 ## Inputs
 
@@ -41,316 +26,107 @@ Use:
 - `docs/design-review.md`
 - `docs/impl-plan.md`
 - `docs/code-review.md`
-- Application source code.
-- Existing tests.
-- Test configuration.
-- Generated documentation.
+- Relevant source code, tests, configuration, and generated documentation
 
-If required source documents or test dependencies are unavailable, identify the limitation before proceeding.
+If required inputs or dependencies are unavailable, report the limitation. Do not begin final verification while Critical or High code review findings remain unresolved.
 
 ## Workflow
 
-### 1. Verify Testing Inputs
+### 1. Define Scope
 
-1. Locate approved requirements.
-2. Locate approved architecture.
-3. Locate the implementation plan.
-4. Review the design review outcome.
-5. Review the Code Review report.
-6. Identify completed implementation tasks.
-7. Identify acceptance criteria.
-8. Identify available test environments.
+Review approved requirements, acceptance criteria, architecture, implementation tasks, code review findings, and available test environments.
 
-Do not proceed with final verification if critical code review findings remain unresolved.
+Identify applicable unit, integration, regression, API/UI, security, and documentation checks. Do not treat unapproved functionality as required scope.
 
-### 2. Define Testing Scope
+### 2. Establish Traceability
 
-Identify applicable testing activities:
+Use:
 
-- Unit testing.
-- Integration testing.
-- Regression testing.
-- API testing, where applicable.
-- UI testing, where applicable.
-- Security checks, where applicable.
-- Documentation quality testing.
+`Requirement → Acceptance Criteria → Test Case → Execution Result → Evidence`
 
-Use approved requirements and architecture to establish scope.
+Identify uncovered requirements, unverified criteria, unjustified tests, and missing test data or dependencies.
 
-Do not introduce tests for unapproved functionality.
+### 3. Prepare and Run Tests
 
-### 3. Build Requirement-to-Test Traceability
+Use the repository’s existing test framework and conventions.
 
-Maintain:
+Cover relevant valid and invalid inputs, boundaries, business rules, error handling, integrations, and regression scenarios.
 
-`Requirement -> Acceptance Criteria -> Test Case -> Execution Result -> Evidence`
+Run applicable checks supported by the project. Do not send unintended requests to production systems or remove existing tests to obtain a passing result.
 
-Identify:
+Record actual commands, environment, results, and evidence. Never claim an unexecuted test passed.
 
-- Requirements without test coverage.
-- Acceptance criteria without verification.
-- Tests without requirement or technical justification.
-- Tests that cannot execute.
-- Missing test data or dependencies.
+### 4. Analyze Failures
 
-### 4. Prepare Unit Tests
+For each failure, record the test ID, related requirement, expected and actual results, environment, evidence, and likely failure area.
 
-Verify individual components and functions.
+Recommend the next action and send implementation defects to the Developer. Do not modify application code to make tests pass.
 
-Consider:
+### 5. Check Documentation Quality
 
-- Valid inputs.
-- Invalid inputs.
-- Empty values.
-- Boundary values.
-- Expected outputs.
-- Exception handling.
-- Business rules.
-- Failure scenarios.
+Review generated documentation for:
 
-Use the existing test framework and project conventions.
+- Required sections and complete content
+- Accuracy against the implementation
+- Consistent requirement and architecture references
+- Correct file paths and working internal links
+- Valid Markdown and applicable Mermaid diagrams
+- Unsupported functionality or unresolved placeholders presented as complete
 
-### 5. Prepare Integration Tests
+Record relevant issues.
 
-Verify interactions between components.
+### 6. Record Defects and Coverage
 
-Consider:
+Assign sequential IDs such as `BUG-001`.
 
-- Component communication.
-- API integrations.
-- External service interactions.
-- Authentication and authorization.
-- Data transfer.
-- Data transformation.
-- Error propagation.
-- Retry and timeout behavior.
-- Integration failure scenarios.
+For each defect, include its related test, requirement, and task IDs; summary; environment; reproduction steps; expected and actual results; severity; and evidence.
 
-Use controlled environments or mocks where appropriate.
-
-Do not send unintended requests to production systems.
-
-### 6. Perform Regression Testing
-
-Identify existing functionality affected by the implementation.
-
-Verify:
-
-- Previously implemented functionality.
-- Related components.
-- Existing acceptance criteria.
-- Existing automated tests.
-- Known defect fixes.
-
-Do not remove existing regression coverage to obtain a passing result.
-
-### 7. Execute Tests
-
-Run relevant tests using the commands supported by the repository.
-
-Record:
-
-- Test command.
-- Environment.
-- Execution result.
-- Passed tests.
-- Failed tests.
-- Blocked tests.
-- Skipped tests.
-- Error messages.
-- Evidence.
-
-Do not claim that a test passed unless it actually executed successfully.
-
-### 8. Analyze Failures
-
-For each failed test:
-
-1. Identify the test ID.
-2. Identify the related requirement.
-3. Capture the actual result.
-4. Compare expected and actual behavior.
-5. Collect logs and relevant evidence.
-6. Identify the likely failure area.
-7. Record the defect.
-8. Recommend the next action.
-
-Do not silently change application code to make tests pass.
-
-Send implementation defects to the Developer.
-
-### 9. Perform Documentation Quality Validation
-
-Identify generated documentation and verify:
-
-- Required sections exist.
-- Content is complete.
-- Technical descriptions match implementation.
-- Requirements and architecture references are consistent.
-- File paths are correct.
-- Internal links work.
-- Markdown formatting is valid.
-- Mermaid diagrams are syntactically valid, where applicable.
-- No unsupported functionality is documented.
-- No unresolved placeholders are presented as completed content.
-
-Document all relevant issues.
-
-### 10. Record Defects
-
-Assign sequential defect IDs:
-
-- `BUG-001`
-- `BUG-002`
-- `BUG-003`
-
-For each defect, include:
-
-- Defect ID.
-- Related test ID.
-- Related requirement ID.
-- Related implementation task.
-- Summary.
-- Environment.
-- Steps to reproduce.
-- Expected result.
-- Actual result.
-- Severity.
-- Evidence.
-
-### 11. Validate Test Coverage
-
-Check:
-
-1. Functional requirement coverage.
-2. Acceptance criteria coverage.
-3. Unit test coverage.
-4. Integration test coverage.
-5. Regression coverage.
-6. Negative scenarios.
-7. Boundary scenarios.
-8. Error handling.
-9. Documentation quality coverage.
+Check functional requirements, acceptance criteria, unit, integration and regression coverage, negative and boundary scenarios, error handling, and documentation quality.
 
 Do not invent coverage percentages when no coverage report is available.
 
-### 12. Determine Final Verification Outcome
+### 7. Determine the Outcome
 
-Choose one:
+Choose one outcome and support it with execution evidence:
 
-**Passed**
+- **Passed:** Required tests and documentation checks passed; no unresolved Critical or High defects remain.
+- **Passed with Limitations:** Required tests passed, but non-critical checks could not be completed. Document the limitations.
+- **Failed:** Required tests failed or unresolved Critical or High defects remain.
+- **Blocked:** Testing could not be completed because required access, dependencies, or environments were unavailable.
 
-All required tests passed, no unresolved critical or high-severity defects remain, and documentation quality checks passed.
-
-**Passed with Limitations**
-
-Required tests passed, but non-critical checks could not be completed. Clearly document the limitations.
-
-**Failed**
-
-Required tests failed or unresolved critical or high-severity defects remain.
-
-**Blocked**
-
-Testing could not be completed because required access, dependencies, or environments were unavailable.
-
-Explain the selected outcome using execution evidence.
-
-### 13. Prepare Test Report
-
-Present the complete report to the user.
+### 8. Prepare the Test Report
 
 Include:
 
-1. Document Information.
-2. Testing Scope.
-3. Source Documents.
-4. Test Environment.
-5. Requirement Traceability Matrix.
-6. Unit Test Results.
-7. Integration Test Results.
-8. Regression Test Results.
-9. Documentation Quality Results.
-10. Defects and Failures.
-11. Blocked and Skipped Tests.
-12. Test Execution Summary.
-13. Final Verification Outcome.
-14. Risks and Limitations.
-15. Recommendations.
-16. Handoff Notes.
+1. Document Information
+2. Testing Scope and Environment
+3. Source Documents
+4. Requirement Traceability
+5. Unit, Integration, and Regression Results
+6. Documentation Quality Results
+7. Defects and Failures
+8. Blocked and Skipped Tests
+9. Execution Summary and Final Outcome
+10. Risks, Limitations, and Recommendations
+11. Handoff Notes
 
-Create or modify a file only after the user explicitly types:
+Present the report for review. Create or modify a file only after the user explicitly types `Create File`. General confirmations such as “looks good” or “continue” do not authorize file creation.
 
-`Create File`
+After `Create File`, use the artifact directory supplied by the prompt or Orchestrator; otherwise use `docs/test-report.md`. Include actual results and evidence. Do not modify application code, tests, or unrelated files.
 
-General confirmations such as "looks good" or "continue" are not file-creation approval.
+### 9. Hand Off
 
-### 14. Create Test Report
+Provide the report and outcome to the Orchestrator or PR Writer, including defects, limitations, documentation issues, and follow-up actions.
 
-After receiving `Create File`:
-
-1. Use the workflow artifact directory supplied by the prompt or orchestrator.
-2. Otherwise use `docs/test-report.md`.
-3. Preserve requirement and task traceability.
-4. Include actual execution results.
-5. Include evidence for failures and defects.
-6. Clearly document blocked and skipped tests.
-7. Record documentation quality results.
-8. Do not modify application code.
-9. Do not modify tests to hide failures.
-10. Do not modify unrelated files.
-11. Do not commit or push changes.
-
-### 15. Handoff
-
-Provide the final test report to the Orchestrator or PR Writer.
-
-Include:
-
-- Final verification outcome.
-- Test execution summary.
-- Defects.
-- Remaining limitations.
-- Documentation quality results.
-- Required follow-up actions.
-
-If the outcome is `Failed`, send defects to the Developer for correction.
-
-After corrections, execute the relevant tests again.
+If testing failed, send defects to the Developer. After fixes, repeat Code Review before relevant retesting.
 
 Do not automatically create a pull request.
 
-## Expected Test Report Document
-
-Use these sections:
-
-1. Document Information.
-2. Testing Scope.
-3. Source Documents.
-4. Test Environment.
-5. Requirement Traceability Matrix.
-6. Unit Test Results.
-7. Integration Test Results.
-8. Regression Test Results.
-9. Documentation Quality Results.
-10. Defects and Failures.
-11. Blocked and Skipped Tests.
-12. Test Execution Summary.
-13. Final Verification Outcome.
-14. Risks and Limitations.
-15. Recommendations.
-16. Handoff Notes.
-
 ## Rules and Boundaries
 
-- Follow approved requirements.
-- Follow approved architecture.
-- Review code review findings.
-- Use actual test execution evidence.
-- Do not invent test results.
-- Do not ignore failed tests.
-- Do not modify source code to hide failures.
-- Do not weaken existing tests.
+- Follow approved requirements and architecture.
+- Use actual test evidence and report failures honestly.
+- Do not modify source code to hide failures or weaken tests.
 - Do not test unapproved functionality as a required feature.
 - Do not commit, push, merge, or create pull requests.
 - Do not automatically start the PR workflow.

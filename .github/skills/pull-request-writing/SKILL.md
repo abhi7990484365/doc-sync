@@ -7,9 +7,9 @@ description: Prepare, validate, commit, push, and publish a GitHub Pull Request 
 
 ## Objective
 
-Complete the final SDLC handoff by converting approved implementation changes into a documented and published GitHub Pull Request.
+Publish a Pull Request for approved implementation changes and report only verified results.
 
-## Step 1: Collect Project Evidence
+## 1. Review the Evidence
 
 Read the available project artifacts:
 
@@ -20,177 +20,89 @@ Read the available project artifacts:
 - `docs/code-review.md`
 - `docs/test-report.md`
 
-Inspect the actual source changes, tests, and changelog.
+Inspect the actual code changes, tests, and changelog. Identify the selected task and confirm its requirement traceability.
 
-Identify the selected task and its requirement traceability.
+## 2. Check Readiness
 
-## Step 2: Validate Readiness
+Confirm that:
 
-Verify:
-
-- Implementation is complete.
-- Code review is complete.
-- Critical and High findings are resolved.
+- The implementation is complete and matches the approved task.
+- Code review is complete, with no unresolved Critical or High findings.
 - Testing evidence is available.
 - Test limitations are documented.
-- The changes correspond to the approved task.
 
-### Decision
+Stop and report the reason if required evidence is missing, code review requires changes, or tests failed or are blocked. A draft PR after failed or blocked testing requires explicit user authorization.
 
-| Condition | Action |
-|---|---|
-| All gates pass | Continue |
-| Code review has unresolved Critical/High findings | Stop |
-| Code review is Changes Required | Stop |
-| Test result is Failed | Stop and request direction |
-| Test result is Blocked | Stop and request direction |
-| Required evidence is missing | Stop and report missing evidence |
-| Test result is Passed with Limitations | Continue and document limitations |
+Tests passed with limitations may proceed if the limitations are documented.
 
-A draft PR after Failed or Blocked testing requires explicit user authorization.
+## 3. Inspect the Repository
 
-## Step 3: Inspect Git Repository
+Use local Git to check the repository root, branch, remotes, default branch, working-tree status, and relevant changes. Inspect the diff before proceeding.
 
-Run appropriate Git commands to identify:
+Include only approved implementation files. Do not discard, overwrite, or silently stage unrelated user changes.
 
-- Repository root
-- Current branch
-- Configured remotes
-- Default branch
-- Working-tree status
-- Relevant unstaged and staged changes
-- Existing commits and branch state
+If local Git or `gh` is unavailable, use available GitHub MCP tools for supported remote operations. MCP cannot verify uncommitted local changes or replace local staging, committing, or pushing. If local changes need publishing and local Git is unavailable, stop before creating the PR.
 
-Inspect the diff before proceeding.
+## 4. Prepare the Branch
 
-Identify approved implementation files and exclude unrelated changes.
+Reuse the current branch if it is an appropriate feature branch.
 
-Do not discard, overwrite, or silently stage unrelated user changes.
+If the current branch is the default branch, create a descriptive feature branch for the selected task. Do not overwrite an existing branch.
 
-If terminal or `gh` is unavailable, inspect the available GitHub MCP tools. MCP may support remote repository/branch/PR inspection, duplicate checks, PR creation, and verification. It cannot establish the state of uncommitted local changes or substitute for local staging, commits, or pushes. If local changes need publishing and local Git operations are unavailable, stop safely before creating a PR.
+Example: `feat/TASK-001-document-change-detection`
 
-## Step 4: Prepare Branch
+## 5. Prepare PR Documentation
 
-If the current branch is already an appropriate feature branch, reuse it.
+Create or update `docs/pull-request.md` with these sections:
 
-If the current branch is the default branch:
+- **Summary** — exactly 2–3 sentences
+- **Changes Made**
+- **Test Evidence** — actual commands, results, and evidence
+- **Known Limitations**
+- **Reviewer Checklist**
+- **Changelog**
 
-1. Identify the selected task ID.
-2. Create a descriptive feature branch.
-3. Confirm the branch is active.
-4. Do not overwrite an existing branch.
+Keep the document consistent with the code and verified test results.
 
-Example:
+## 6. Commit and Push
 
-`feat/TASK-001-document-change-detection`
+Stage only approved implementation files and `docs/pull-request.md`. Review the staged diff before committing.
 
-## Step 5: Prepare PR Documentation
+Use a meaningful commit message. Do not stage everything blindly, include secrets or unrelated changes, rewrite previous commits without authorization, or force-push.
 
-Create or update `docs/pull-request.md`.
+Push the feature branch to the configured remote and verify the result. If authentication or permissions fail, report the error and stop.
 
-Use this structure:
+## 7. Create the Pull Request
 
-# Pull Request
+Use GitHub CLI or available GitHub MCP tools.
 
-## Summary
-
-Write exactly 2–3 sentences.
-
-## Changes Made
-
-Describe the implementation changes.
-
-## Test Evidence
-
-Include actual test commands, outcomes, and evidence.
-
-## Known Limitations
-
-Document verified limitations and unresolved issues.
-
-## Reviewer Checklist
-
-Include relevant review checks.
-
-## Changelog
-
-Summarize important changes.
-
-Ensure the content is consistent with the actual code and verification results.
-
-## Step 6: Stage and Commit
-
-Stage only approved implementation files and `docs/pull-request.md`.
-
-Review the staged diff before committing.
-
-Use a meaningful commit message.
-
-Example:
-
-`feat: implement document change detection`
-
-Do not:
-- Stage all repository files blindly.
-- Include credentials or secrets.
-- Include unrelated changes.
-- Rewrite previous commits without authorization.
-
-## Step 7: Push Branch
-
-Push the feature branch to the configured remote.
-
-Verify the push result.
-
-If authentication or permission fails, report the error and stop.
-
-Never force-push.
-
-## Step 8: Create GitHub Pull Request
-
-Use GitHub CLI or available GitHub MCP tools. If `gh` is unavailable, use MCP for supported remote-side inspection and PR operations.
-
-Verify the repository, source branch, target branch, and pushed commit.
-
-Use MCP to create a PR only when the approved source branch and required commit are verified on the remote. Do not claim local changes were included unless their commit and push were actually completed and verified.
-
-Check whether an appropriate PR already exists.
+Before creating the PR, verify the repository, source and target branches, and that the expected commit is on the remote. Check whether a suitable PR already exists.
 
 Create the PR with:
 
-- Title describing the implementation.
-- Body containing all six required sections.
-- Source branch set to the feature branch.
-- Target branch set to the repository's default branch unless the user specified another target.
+- A title that describes the implementation
+- A body containing all six sections from `docs/pull-request.md`
+- The feature branch as the source
+- The default branch as the target, unless the user specified another target
 
-If the PR already exists for this implementation, report it or update it only when the relationship is unambiguous.
+If a PR already exists, report it or update it only when its relationship to this implementation is clear.
 
 Do not merge the PR.
 
-## Step 9: Verify Publication
+## 8. Verify Publication
 
-Verify that:
+Verify the remote branch, expected commit, PR title and body, and PR URL.
 
-- The feature branch exists on the remote.
-- The expected commit is present.
-- The PR exists on GitHub.
-- The PR title and body are correct.
-- The PR URL is available.
+Update `docs/pull-request.md` with the actual PR URL and publication details. If the update requires another commit, commit and push it, then verify the result.
 
-Update `docs/pull-request.md` if needed to include the actual PR URL and publication details. If this requires another commit, commit and push that documentation update.
-
-## Step 10: Return Execution Summary
+## 9. Report the Result
 
 Return:
 
-- Repository
-- Feature branch
-- Target branch
-- Commit hash
-- Commit message
+- Repository and branches
+- Commit hash and message
 - Push result
-- PR creation result
-- PR URL
+- PR creation result and URL
 - Documentation file
 - Test and review status
 - Any errors or limitations
@@ -199,13 +111,6 @@ Report only verified results.
 
 ## Safety Boundaries
 
-The explicitly started PR workflow authorizes staging approved changes, committing, pushing, and creating the PR.
+This explicitly started workflow authorizes staging approved changes, committing, pushing, and creating a PR.
 
-It does not authorize:
-
-- Merging the PR
-- Force-pushing
-- Deleting branches
-- Discarding user changes
-- Including unrelated files
-- Bypassing review or testing gates
+It does not authorize merging the PR, force-pushing, deleting branches, discarding user changes, including unrelated files, or bypassing review and testing gates.

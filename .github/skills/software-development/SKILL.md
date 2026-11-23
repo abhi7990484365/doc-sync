@@ -7,26 +7,15 @@ description: Implement approved Doc-Sync development tasks using the implementat
 
 ## Purpose
 
-Implement approved Doc-Sync development tasks in accordance with the approved requirements, architecture, and implementation plan.
+Implement one approved task using the approved requirements, architecture, and implementation plan.
 
-The Developer Agent defines the role, tools, responsibilities, and decision boundaries.
-
-This skill defines the reusable software development procedure.
-
-The Development Prompt starts the workflow.
+The Developer Agent defines the role and decision boundaries. This skill defines the development procedure. The Development Prompt starts the workflow.
 
 ## When to Use
 
-Use this skill when:
+Use when a specific task is selected for implementation.
 
-- An implementation plan has been approved.
-- A specific implementation task has been selected.
-- Source code needs to be created or modified.
-- Existing tests need to be updated.
-- New automated tests need to be added.
-- Implementation changes need verification.
-
-Do not use this skill to discover requirements, redesign architecture, or create implementation plans.
+Do not use this skill to discover requirements, redesign architecture, or create an implementation plan.
 
 ## Inputs
 
@@ -36,229 +25,101 @@ Use:
 - `docs/architecture.md`
 - `docs/design-review.md`
 - `docs/impl-plan.md`
-- Existing source code.
-- Existing tests.
-- Project configuration and development documentation.
+- Relevant source code, tests, and project documentation
 
-The selected task ID must be supplied by the user or Orchestrator.
-
-If required documents are missing, ask the user before proceeding.
+The user or Orchestrator must provide the selected task ID. If required artifacts or approvals are missing, ask before proceeding.
 
 ## Workflow
 
-### 1. Verify Development Inputs
+### 1. Verify the Task
 
-1. Locate the implementation plan.
-2. Locate the approved requirements.
-3. Locate the approved architecture.
-4. Review the design review outcome and relevant findings.
-5. Identify the selected task.
-6. Verify that the task is approved for implementation.
+Review the selected task, its requirements, architecture component, dependencies, completion criteria, verification approach, and status.
 
-Do not begin implementation if required approvals are missing.
+Do not proceed if the task is unapproved, blocked, or has incomplete dependencies. Raise conflicts or unclear requirements before implementation.
 
-### 2. Analyze the Selected Task
+### 2. Inspect the Repository
 
-For the selected task, identify:
+Review the project structure, relevant code and tests, configuration, dependencies, and existing conventions.
 
-- Task ID.
-- Task title.
-- Description.
-- Related requirement IDs.
-- Architecture component.
-- Dependencies.
-- Priority.
-- Completion criteria.
-- Verification approach.
-- Current task status.
+Identify the files and interfaces likely to be affected. Prefer existing patterns and reusable components.
 
-Do not implement tasks that are blocked or have incomplete dependencies.
+### 3. Plan the Change
 
-### 3. Inspect the Existing Repository
+Briefly identify the task, requirements addressed, expected file changes, affected functionality, and testing approach.
 
-Before modifying files:
+Ask for clarification if the task cannot be implemented safely or accurately within the approved design.
 
-1. Inspect the project directory structure.
-2. Identify the programming language and framework.
-3. Review relevant existing modules.
-4. Review dependency and configuration files.
-5. Inspect existing tests.
-6. Identify reusable utilities and patterns.
-7. Identify affected interfaces and integrations.
+### 4. Implement
 
-Prefer existing project conventions over introducing new patterns.
+- Implement only the selected task.
+- Follow the approved requirements and architecture.
+- Keep changes modular and consistent with project conventions.
+- Handle relevant errors and invalid inputs.
+- Protect secrets and sensitive information.
+- Avoid unnecessary dependencies and unrelated refactoring.
 
-### 4. Prepare an Implementation Approach
+Do not add unsupported functionality or change approved requirements.
 
-Describe:
+### 5. Add or Update Tests
 
-- Selected task.
-- Requirements addressed.
-- Architecture component.
-- Files expected to change.
-- New files required.
-- Existing functionality affected.
-- Dependencies.
-- Testing approach.
+Use the existing test framework and conventions. Cover relevant positive, negative, boundary, error-handling, integration, and regression scenarios.
 
-Identify any conflict with approved requirements or architecture.
+Tests must verify the task’s completion criteria.
 
-Ask the user for clarification when the task cannot be implemented safely or accurately.
+### 6. Run Validation
 
-### 5. Implement the Task
+Run applicable project checks, such as tests, linting, static analysis, type checks, or builds.
 
-1. Implement only the selected task.
-2. Follow the approved architecture.
-3. Reuse existing components where appropriate.
-4. Write modular and maintainable code.
-5. Apply project naming and coding conventions.
-6. Handle documented errors and failure scenarios.
-7. Validate external inputs.
-8. Protect secrets and sensitive information.
-9. Avoid unnecessary dependencies.
-10. Avoid unrelated refactoring.
+Record the actual commands and results. If a check cannot be run, state why. Never claim that unexecuted checks passed.
 
-Do not introduce functionality that is not supported by the selected task.
+### 7. Review Scope and Traceability
 
-### 6. Create or Update Tests
+Confirm that:
 
-Add or update relevant tests.
-
-Consider:
-
-- Positive scenarios.
-- Negative scenarios.
-- Boundary conditions.
-- Invalid inputs.
-- Error handling.
-- Integration behavior.
-- Regression scenarios.
-
-Use the existing test framework and repository conventions.
-
-Ensure tests verify the task's completion criteria.
-
-### 7. Execute Validation
-
-Run applicable checks:
-
-- Unit tests.
-- Integration tests.
-- API tests.
-- UI tests.
-- Linting.
-- Static analysis.
-- Type checking.
-- Build checks.
-
-Execute only checks supported by the project.
-
-Record the actual commands and results.
-
-If validation cannot be completed, document the limitation.
-
-### 8. Review Implementation Scope
-
-Verify:
-
-- Only intended files were modified.
 - Changes match the selected task.
-- Requirements remain unchanged.
-- Architecture remains consistent.
-- Tests cover relevant behavior.
-- No secrets or sensitive information were introduced.
-- No unrelated changes were made.
+- Only intended files were modified.
+- Requirements and architecture remain unchanged and aligned.
+- Relevant tests cover the completion criteria.
+- No secrets or unrelated changes were introduced.
 
-### 9. Map Implementation to Requirements
+Trace the work as:
 
-Maintain:
+`Requirement → Architecture Component → Task → Code Change → Test`
 
-`Requirement -> Architecture Component -> Implementation Task -> Code Change -> Test`
+Identify any unmet completion criteria.
 
-Identify:
+### 8. Report and Hand Off
 
-- Requirements addressed.
-- Source files implementing the functionality.
-- Tests verifying the functionality.
-- Completion criteria not yet satisfied.
+Provide:
 
-### 10. Prepare Implementation Report
+- Task ID and completion status
+- Implementation summary and requirement traceability
+- Files created or modified
+- Tests added or updated
+- Validation commands and actual results
+- Known limitations and unresolved issues
 
-Present:
+Hand the evidence to the Code Reviewer or Orchestrator. Do not automatically start another task.
 
-1. Task Information.
-2. Implementation Summary.
-3. Requirements Addressed.
-4. Architecture Component.
-5. Files Created.
-6. Files Modified.
-7. Tests Added or Updated.
-8. Validation Commands.
-9. Actual Test Results.
-10. Known Limitations.
-11. Remaining Issues.
-12. Completion Status.
-13. Handoff Notes.
+## Task Status
 
-Do not claim successful execution without evidence.
+Update `docs/impl-plan.md` only when the user or workflow authorizes the update and the evidence supports it.
 
-### 11. Update Task Status
+Use these statuses:
 
-Update task status in `docs/impl-plan.md` only when:
+- Not Started
+- In Progress
+- Blocked
+- Completed
 
-- The selected task's status needs updating.
-- The user or workflow explicitly authorizes that documentation update.
-- The completion criteria and verification evidence support the new status.
-
-Use clear statuses:
-
-- Not Started.
-- In Progress.
-- Blocked.
-- Completed.
-
-Do not mark a task Completed if its required verification is incomplete.
-
-### 12. Handoff
-
-Provide the implementation summary and evidence to the Code Reviewer or Orchestrator.
-
-Include:
-
-- Task ID.
-- Changed files.
-- Test results.
-- Known limitations.
-- Unresolved issues.
-
-Do not automatically start another task.
-
-## Expected Implementation Report
-
-Use these sections:
-
-1. Task Information.
-2. Implementation Summary.
-3. Requirement Traceability.
-4. Architecture Alignment.
-5. Files Created.
-6. Files Modified.
-7. Test Coverage.
-8. Validation Results.
-9. Known Limitations.
-10. Remaining Issues.
-11. Completion Status.
-12. Handoff Notes.
+Do not mark a task Completed while required verification is incomplete.
 
 ## Rules and Boundaries
 
 - Implement only the selected approved task.
-- Follow approved requirements and architecture.
-- Respect task dependencies.
-- Do not invent functionality.
-- Do not change approved business requirements.
-- Do not redesign architecture.
-- Do not remove existing tests to hide failures.
-- Do not claim unexecuted tests passed.
+- Respect task dependencies and approved design.
+- Do not invent functionality, redesign architecture, or change business requirements.
+- Do not remove tests to hide failures.
+- Do not claim unverified results.
 - Do not commit or push without authorization.
 - Do not automatically implement another task.

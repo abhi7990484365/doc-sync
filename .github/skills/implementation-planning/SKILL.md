@@ -1,356 +1,100 @@
 ---
 name: implementation-planning
-description: Convert approved Doc-Sync requirements, architecture, and design review findings into a prioritized, dependency-ordered implementation plan. Use when creating or updating docs/impl-plan.md.
+description: Turn approved Doc-Sync requirements, architecture, and design review findings into a prioritized implementation plan.
 ---
 
 # Implementation Planning
 
 ## Purpose
 
-Create an actionable implementation plan from approved Doc-Sync requirements and reviewed architecture.
-
-The plan must identify:
-
-- Implementation tasks.
-- Task dependencies.
-- Priority.
-- Requirement traceability.
-- Completion criteria.
-- Verification activities.
-- Blocked tasks.
-- Unresolved decisions.
-
-The Planner Agent defines the role, tools, responsibilities, and decision boundaries.
-
-This skill defines the reusable implementation planning procedure.
-
-The Planning Prompt starts the workflow.
-
-## When to Use
-
-Use this skill when:
-
-- Requirements have been approved.
-- Architecture has been approved for planning.
-- Design review findings need to be considered.
-- Architecture components need to be broken into implementation tasks.
-- Dependencies and implementation order need to be established.
-- A structured implementation plan needs to be created or updated.
-
-Do not use this skill to discover requirements, design architecture, or write application code.
+Create a practical plan that breaks the approved design into tasks the Developer can implement and verify.
 
 ## Inputs
 
 Use:
-
-- `docs/requirements.md`
-- `docs/architecture.md`
+- Approved `docs/requirements.md`
+- Approved `docs/architecture.md`
 - `docs/design-review.md`
-- Existing project documentation.
-- Approved technical constraints and decisions.
+- Relevant project documentation and approved technical decisions
 
-If a required document is missing, ask the user before proceeding.
-
-Do not assume draft requirements or unapproved architecture decisions are approved.
+If a required document is missing or approval is unclear, ask before planning. Do not plan around unresolved critical design findings.
 
 ## Workflow
 
-### 1. Verify Planning Inputs
+### 1. Review the inputs
 
-1. Locate `docs/requirements.md`.
-2. Locate `docs/architecture.md`.
-3. Read both documents completely.
-4. Verify their approval status.
-5. Read `docs/design-review.md`, if available.
-6. Review unresolved findings and conditions.
-7. Identify missing decisions and external dependencies.
+Identify the requirements, architecture components, design review findings, constraints, and open decisions that affect implementation.
 
-Do not plan implementation around unresolved critical architecture issues.
+Preserve the original requirement IDs. Do not add scope or treat recommendations as approved decisions.
 
-### 2. Review Requirements
+### 2. Create implementation tasks
 
-Identify:
-
-- Functional requirements.
-- Non-functional requirements.
-- Acceptance criteria.
-- Security requirements.
-- Integration requirements.
-- Data requirements.
-- Constraints.
-- Scope exclusions.
-
-Preserve original requirement IDs.
-
-### 3. Review Architecture
-
-Identify:
-
-- System components.
-- Component responsibilities.
-- Integration points.
-- Data structures and flows.
-- APIs and interfaces.
-- Security controls.
-- Error handling.
-- Infrastructure and deployment requirements, where applicable.
-
-Use the approved architecture as the implementation baseline.
-
-Do not introduce new components without documented justification and approval.
-
-### 4. Review Design Findings
-
-Read the design review outcome and findings.
-
-Determine:
-
-- Which findings must be addressed before implementation.
-- Which findings can be handled as implementation tasks.
-- Which findings require architecture changes.
-- Which decisions remain open.
-- Which conditions affect implementation order.
-
-Do not silently convert an architecture recommendation into an approved implementation requirement.
-
-### 5. Identify Workstreams
-
-Group related implementation work into logical workstreams.
-
-Possible candidate workstreams for Doc-Sync include:
-
-- Project foundation and configuration.
-- GitHub integration.
-- Change detection.
-- Documentation parsing.
-- Documentation impact analysis.
-- Documentation update generation.
-- Validation.
-- Human approval.
-- Documentation synchronization.
-- Audit logging and reporting.
-- Testing and quality assurance.
-- Deployment and operational readiness.
-
-These are candidate workstreams, not mandatory project scope. Include only work supported by approved requirements and architecture.
-
-### 6. Break Work into Tasks
-
-Create small, actionable tasks.
-
-Assign sequential IDs:
-
-- `TASK-001`
-- `TASK-002`
-- `TASK-003`
+Break the work into small, actionable tasks. Give each task a sequential ID, such as `TASK-001`.
 
 Each task must include:
+- Title and description
+- Related requirement IDs
+- Architecture component
+- Dependencies
+- Priority
+- Completion criteria
+- Verification approach
+- Status
 
-1. Task ID.
-2. Title.
-3. Description.
-4. Related requirement IDs.
-5. Architecture component.
-6. Dependencies.
-7. Priority.
-8. Completion criteria.
-9. Verification approach.
-10. Status.
+Include only work supported by the approved requirements and architecture.
 
-Avoid tasks that are too broad to implement or verify.
+### 3. Set order and priority
 
-### 7. Define Dependencies
-
-Identify task prerequisites.
-
-For each dependency:
-
-- Reference the prerequisite task ID.
-- Explain the dependency.
-- Verify that the prerequisite exists.
-- Identify blocked tasks.
-- Avoid circular dependencies.
-
-Organize tasks in a logical implementation sequence.
-
-### 8. Assign Priorities
+Identify which tasks depend on others. Reference dependency task IDs, avoid circular dependencies, and mark blocked tasks.
 
 Use:
+- **P0 — Critical:** Required prerequisite or critical functionality
+- **P1 — High:** Important for planned delivery
+- **P2 — Medium:** Supporting work or improvement
+- **P3 — Low:** Optional work that does not block core delivery
 
-- **P0 - Critical:** Required prerequisite or critical functionality.
-- **P1 - High:** Important functionality needed for planned delivery.
-- **P2 - Medium:** Supporting functionality or improvements.
-- **P3 - Low:** Optional work that does not block core delivery.
+Base priorities on requirements, dependencies, and documented risks. Do not invent owners, dates, or estimates.
 
-Justify priority using approved requirements, dependencies, or documented risks.
+### 4. Define completion and verification
 
-### 9. Define Completion Criteria
+For each task, state what must be true for it to be complete and how that result will be checked.
 
-Each task must have clear completion criteria.
+Use relevant verification such as unit, integration, API, UI, security, or documentation tests. Do not invent behavior that is not in the approved design.
 
-Criteria should describe an observable result.
+### 5. Check the plan
 
-Examples of suitable criteria:
+Verify that:
+- Requirements are covered or their exclusion is explained.
+- Tasks align with the approved architecture.
+- Dependencies are valid and tasks are in a workable order.
+- Each task has completion and verification criteria.
+- Design findings, risks, blockers, and open decisions are recorded.
 
-- Required interface is implemented according to the approved architecture.
-- Expected input and output behavior is covered by tests.
-- Error handling is implemented for documented failure scenarios.
-- Relevant automated tests pass.
-- Security requirements associated with the task are verified.
+Flag gaps rather than filling them with assumptions.
 
-Do not invent specific technical behavior that is absent from the approved design.
+### 6. Present and create the plan
 
-### 10. Define Verification Approach
-
-For each task, identify relevant verification activities:
-
-- Unit tests.
-- Integration tests.
-- API tests.
-- UI tests, where applicable.
-- Security checks, where applicable.
-- Documentation validation.
-- Manual verification, where necessary.
-
-Verification must align with the acceptance criteria and architecture.
-
-### 11. Maintain Traceability
-
-Maintain:
-
-`Requirement -> Architecture Component -> Implementation Task -> Verification`
-
-Identify:
-
-- Requirements without implementation tasks.
-- Tasks without requirement or architecture justification.
-- Architecture components without planned implementation work.
-- Tasks without verification criteria.
-- Unresolved dependencies.
-
-Explain any intentional exclusions.
-
-### 12. Identify Risks and Blockers
-
-Document:
-
-- Unresolved design review findings.
-- Pending technical decisions.
-- External dependencies.
-- Access requirements.
-- Environment dependencies.
-- Integration risks.
-- Tasks blocked by missing information.
-
-Do not invent owners, dates, estimates, or external commitments.
-
-### 13. Validate the Implementation Plan
-
-Check:
-
-1. Requirements coverage.
-2. Architecture alignment.
-3. Design review conditions.
-4. Task completeness.
-5. Dependency validity.
-6. Circular dependencies.
-7. Priority justification.
-8. Completion criteria.
-9. Verification coverage.
-10. Blocked tasks.
-11. Risks and open decisions.
-12. Implementation order.
-
-Report gaps rather than silently filling them with assumptions.
-
-### 14. Present the Plan for Approval
-
-Present the complete implementation plan to the user.
-
-Include:
-
-- Planning overview.
-- Source documents.
-- Workstreams.
-- Prioritized task list.
-- Dependencies.
-- Requirement traceability.
-- Completion criteria.
-- Verification approach.
-- Blocked tasks.
-- Risks and open decisions.
+Present the plan for approval, including tasks, priorities, dependencies, traceability, verification, risks, and blockers.
 
 Create or modify a file only after the user explicitly types:
 
 `Create File`
 
-General confirmations such as "looks good" or "continue" are not file-creation approval.
+After receiving that command, use the artifact path provided by the Orchestrator. If none is provided, use `docs/impl-plan.md`.
 
-### 15. Create Implementation Plan
+Keep the plan focused. Do not write code, modify unrelated files, or commit or push changes.
 
-After receiving `Create File`:
+## Handoff
 
-1. Use the workflow artifact directory supplied by the prompt or orchestrator.
-2. Otherwise use `docs/impl-plan.md`.
-3. Do not create multiple competing implementation plans.
-4. Preserve original requirement IDs.
-5. Keep dependencies consistent.
-6. Clearly identify blocked tasks.
-7. Record assumptions and open decisions.
-8. Do not write application source code.
-9. Do not modify unrelated files.
-10. Do not commit or push changes.
+Give the Developer or Orchestrator the task IDs, priorities, dependencies, completion criteria, verification expectations, and any blockers.
 
-After creating the document, report its path and summarize the plan.
+The Developer should work only on explicitly selected and approved tasks. Do not start development automatically.
 
-### 16. Handoff
+## Boundaries
 
-Hand the implementation plan to the Developer or Orchestrator.
-
-Include:
-
-- Task IDs and priorities.
-- Required task dependencies.
-- Completion criteria.
-- Verification expectations.
-- Blocked tasks.
-- Unresolved decisions.
-- Required approvals.
-
-The Developer should implement only explicitly selected and approved tasks.
-
-Do not automatically start development.
-
-## Expected Implementation Plan Document
-
-Use these sections:
-
-1. Document Information.
-2. Planning Overview.
-3. Source Documents.
-4. Planning Assumptions and Constraints.
-5. Architecture Summary.
-6. Implementation Workstreams.
-7. Prioritized Task List.
-8. Task Dependencies.
-9. Requirement Traceability Matrix.
-10. Completion Criteria.
-11. Verification Strategy.
-12. Risks and Blockers.
-13. Open Decisions.
-14. Implementation Sequence.
-15. Handoff Notes.
-
-## Rules and Boundaries
-
-- Follow approved requirements.
-- Follow the approved architecture.
+- Follow approved requirements and architecture.
 - Consider design review findings.
-- Never invent scope or technical constraints.
-- Clearly identify assumptions and blockers.
-- Do not redesign architecture.
-- Do not modify approved requirements.
-- Do not write application source code.
-- Do not execute implementation tasks.
+- Do not invent scope or technical constraints.
+- Do not redesign architecture or change approved requirements.
+- Do not execute implementation tasks or write application code.
 - Do not commit, push, merge, or create pull requests.
-- Do not automatically start development.
